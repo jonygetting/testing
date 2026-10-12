@@ -16,6 +16,23 @@
 #           panel_url: https://103.171.84.81:25181
 #           webhook_key: ${{ secrets.AAPANEL_WEBHOOK_KEY }}
 
+# name: Deploy to Teacher Server
+
+# on:
+#   push:
+#     branches: [ main ]
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+
+#       - name: Trigger aaPanel Webhook
+#         run: |
+#           curl -k -s -X POST "https://103.171.84.81:25181/hook?key=${{ secrets.AAPANEL_WEBHOOK_KEY }}"
+
+
 name: Deploy to Teacher Server
 
 on:
@@ -26,8 +43,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
       - name: Trigger aaPanel Webhook
         run: |
-          curl -k -s -X POST "https://103.171.84.81:25181/hook?key=${{ secrets.AAPANEL_WEBHOOK_KEY }}"
+          curl -k -X POST "https://103.171.84.81:25181/hook?key=${{ secrets.AAPANEL_WEBHOOK_KEY }}"
