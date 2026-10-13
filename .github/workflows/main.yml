@@ -64,7 +64,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Trigger aaPanel Webhook
-        uses: jonygetting/testing@main
+        uses: jonygetting/aapanel-deploy-action@main
         with:
           panel_url: https://103.171.84.81:25181
           webhook_key: ${{ secrets.AAPANEL_WEBHOOK_KEY }}
