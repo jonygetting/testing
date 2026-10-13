@@ -47,7 +47,6 @@
 #         run: |
 #           curl -k -X POST "https://103.171.84.81:25181/hook?key=${{ secrets.AAPANEL_WEBHOOK_KEY }}"
 
-```yaml
 name: Deploy to Teacher Server
 
 on:
