@@ -71,7 +71,7 @@ jobs:
             --max-time 15 \
             -o /dev/null \
             -w '\nHTTP status: %{http_code}\n' \
-            http://103.171.84.81:25181/ || true
+            https://103.171.84.81:25181/ || true
 
       - name: Trigger aaPanel Webhook
         uses: tunnaduong/aapanel-deploy-action@v1.0
