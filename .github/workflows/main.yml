@@ -47,6 +47,7 @@
 #         run: |
 #           curl -k -X POST "https://103.171.84.81:25181/hook?key=${{ secrets.AAPANEL_WEBHOOK_KEY }}"
 
+```yaml
 name: Deploy to Teacher Server
 
 on:
@@ -62,9 +63,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Diagnose aaPanel Connection
+      - name: Diagnose aaPanel HTTPS
         run: |
-          echo "Checking aaPanel endpoint..."
+          echo "Checking aaPanel HTTPS endpoint..."
 
           curl -sS -v \
             --connect-timeout 10 \
@@ -76,5 +77,6 @@ jobs:
       - name: Trigger aaPanel Webhook
         uses: tunnaduong/aapanel-deploy-action@v1.0
         with:
-          panel_url: http://103.171.84.81:25181
+          panel_url: https://103.171.84.81:25181
           webhook_key: ${{ secrets.AAPANEL_WEBHOOK_KEY }}
+```
