@@ -78,4 +78,3 @@ jobs:
         with:
           panel_url: https://103.171.84.81:25181
           webhook_key: ${{ secrets.AAPANEL_WEBHOOK_KEY }}
-```
