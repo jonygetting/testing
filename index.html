@@ -511,6 +511,18 @@
     background: var(--primary); color: #fff;
     transform: translateY(-1px); box-shadow: 0 4px 10px -4px rgba(15,118,110,0.4);
   }
+  
+  /* Style khusus untuk modul pembuka */
+  .solid-menu a.solid-intro {
+    background: rgba(234, 88, 12, 0.1); 
+    color: #c2410c; 
+    border-color: rgba(234, 88, 12, 0.2);
+    width: 100%; justify-content: center; margin-bottom: 4px;
+  }
+  .solid-menu a.solid-intro:hover {
+    background: #ea580c; color: #fff;
+    box-shadow: 0 4px 10px -4px rgba(234, 88, 12, 0.4);
+  }
 
   .meeting-link {
     display: inline-flex; align-items: center; gap: 5px;
@@ -1121,8 +1133,8 @@ const courseData = {
       { num: 10, topic: 'Collection & Generics', desc: 'List, Map, Set, dan generic type.', link: '#' },
       { num: 11, topic: 'File I/O', desc: 'Membaca dan menulis file.', link: '#' },
       { num: 12, topic: 'GUI Sederhana', desc: 'Dasar pembuatan antarmuka dengan Java Swing/Tkinter.', link: '#' },
-      // PERTEMUAN 13 - MENU SOLID
-      { num: 13, topic: 'Prinsip SOLID', desc: 'Memahami 5 prinsip desain OOP: SRP, OCP, LSP, ISP, dan DIP. Silakan pilih modul di bawah ini:', link: 'solid-menu' },
+      // PERTEMUAN 13 - MENU SOLID + MODUL PEMBUKA
+      { num: 13, topic: 'Prinsip SOLID', desc: 'Memahami 5 prinsip desain OOP: SRP, OCP, LSP, ISP, dan DIP. Silakan mulai dari Modul Pembuka, lalu pelajari masing-masing prinsip:', link: 'solid-menu' },
       { num: 14, topic: 'Presentasi Proyek Akhir', desc: 'Demo aplikasi OOP.', link: '#' },
     ]
   }
@@ -1143,11 +1155,15 @@ function openCourse(key) {
   modalBody.innerHTML = data.meetings.map(m => {
     let linkHtml = '';
     
-    // Logika untuk menampilkan menu SOLID
+    // Logika untuk menampilkan menu SOLID + Modul Pembuka
     if (m.link === 'solid-menu') {
-      // MENGGUNAKAN LINK FILE HTML FISIK (BUKAN BLOB)
       linkHtml = `
         <div class="solid-menu">
+          <!-- MODUL PEMBUKA (FILE solid.html) -->
+          <a href="solid.html" target="_blank" class="solid-intro">
+            🏁 Modul Pembuka: Pengantar SOLID
+          </a>
+          <!-- 5 MODUL PRINSIP -->
           <a href="single.html" target="_blank">📘 Single Responsibility</a>
           <a href="ocp.html" target="_blank">📗 Open/Closed</a>
           <a href="lsp.html" target="_blank">📙 Liskov Substitution</a>
