@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Syahru Rahmayuda, S.Kom., M.Kom. - Dosen Sistem Informasi</title>
+<title>Syahru Rahmayuda, S.Kom., M.Kom. — Dosen Sistem Informasi</title>
 <meta name="description" content="Profil akademik Syahru Rahmayuda, S.Kom., M.Kom. — Dosen Prodi Sistem Informasi, Fakultas Matematika dan Ilmu Pengetahuan Alam, Universitas Tanjungpura." />
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -388,6 +388,15 @@
   }
   .cert-meta-item small { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; }
   .cert-meta-item strong { font-size: 0.95rem; color: var(--text); }
+  
+  /* Tanda tangan simulasi */
+  .signature-box {
+    display: flex; align-items: center; gap: 12px; margin-top: 6px;
+  }
+  .signature-placeholder {
+    font-family: 'Brush Script MT', 'Lucida Handwriting', cursive;
+    font-size: 1.3rem; color: #1e293b; letter-spacing: 1px;
+  }
 
   /* ============ RISET ============ */
   .research-list { display: grid; gap: 16px; }
@@ -762,12 +771,21 @@
             <small>Ditandatangani Oleh</small>
             <strong>Damien Carey</strong>
             <span style="font-size: 0.7rem; color: var(--text-muted);">SVP, Oracle University</span>
+            <!-- Simulasi Tanda Tangan -->
+            <div class="signature-box">
+              <span class="signature-placeholder">D. Carey</span>
+            </div>
           </div>
         </div>
         
-        <a href="#" class="btn btn-primary" style="background: linear-gradient(135deg, #ea580c, #c2410c); box-shadow: 0 10px 24px -8px rgba(234,88,12,0.6);">
-          📜 Lihat Sertifikat Asli
+        <!-- TOMBOL LIHAT SERTIFIKAT ASLI -->
+        <!-- Ganti 'eCertificate.pdf' dengan path file PDF Anda yang sebenarnya -->
+        <a href="eCertificate.pdf" target="_blank" class="btn btn-primary" style="background: linear-gradient(135deg, #ea580c, #c2410c); box-shadow: 0 10px 24px -8px rgba(234,88,12,0.6); width: 100%; justify-content: center;">
+          📜 Lihat Sertifikat Asli (PDF)
         </a>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px; text-align: center;">
+          *Pastikan file <code>eCertificate.pdf</code> berada di folder yang sama dengan file HTML ini.
+        </p>
       </div>
     </div>
   </div>
