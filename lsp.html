@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul LSP — Liskov Substitution Principle | Praktikum PBO</title>
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-dark: #3730a3;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --code-bg: #0f172a;
+    --code-text: #e2e8f0;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --lsp: #f59e0b;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+
+  .container {
+    max-width: 950px;
+    margin: 0 auto;
+    padding: 40px 30px 80px;
+    background: var(--card);
+    box-shadow: 0 0 30px rgba(0,0,0,0.05);
+    min-height: 100vh;
+  }
+
+  /* ============ COVER ============ */
+  .cover {
+    text-align: center;
+    padding: 50px 20px 40px;
+    border-bottom: 3px solid var(--primary);
+    margin-bottom: 40px;
+  }
+  .cover .institution {
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--primary-dark);
+    letter-spacing: 1.5px;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+  }
+  .cover h1 {
+    font-size: 2.2em;
+    color: var(--primary-dark);
+    margin: 15px 0 8px;
+    line-height: 1.2;
+  }
+  .cover .lsp-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    background: var(--lsp);
+    color: #fff;
+    font-size: 2.5em;
+    font-weight: 800;
+    border-radius: 50%;
+    margin: 15px 0;
+    box-shadow: 0 4px 15px rgba(245,158,11,0.35);
+  }
+  .cover .subtitle {
+    font-size: 1.05em;
+    color: var(--muted);
+    margin: 15px 0 25px;
+    font-style: italic;
+    max-width: 620px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .cover .info-card {
+    background: linear-gradient(135deg, #f1f5f9 0%, #fef3c7 100%);
+    display: inline-block;
+    padding: 20px 35px;
+    border-radius: 12px;
+    margin-top: 20px;
+    text-align: left;
+    border: 2px solid var(--border);
+    min-width: 300px;
+    max-width: 100%;
+  }
+  .cover .info-card p {
+    margin: 6px 0;
+    font-size: 0.95em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .cover .info-card .label {
+    color: var(--muted);
+    min-width: 130px;
+  }
+  .cover .info-card .value {
+    font-weight: 700;
+    color: var(--primary-dark);
+    flex: 1;
+  }
+  .cover .badge {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    padding: 8px 22px;
+    border-radius: 20px;
+    font-size: 0.88em;
+    letter-spacing: 0.5px;
+    margin-top: 20px;
+  }
+
+  /* ============ HEADINGS ============ */
+  h2 {
+    font-size: 1.5em;
+    color: var(--primary-dark);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 8px;
+    margin-top: 45px;
+    page-break-after: avoid;
+  }
+
+  h3 {
+    font-size: 1.2em;
+    color: var(--text);
+    margin-top: 30px;
+    page-break-after: avoid;
+  }
+
+  h4 {
+    font-size: 1.05em;
+    color: var(--primary);
+    margin-top: 22px;
+    page-break-after: avoid;
+  }
+
+  p { margin: 12px 0; }
+
+  /* ============ TOC ============ */
+  .toc {
+    background: #f1f5f9;
+    border-left: 4px solid var(--primary);
+    padding: 20px 25px;
+    border-radius: 6px;
+    margin: 30px 0;
+  }
+  .toc h3 { margin-top: 0; color: var(--primary-dark); }
+  .toc ol { margin: 0; padding-left: 20px; }
+  .toc li { margin: 6px 0; }
+  .toc a { color: var(--text); text-decoration: none; }
+  .toc a:hover { color: var(--primary); }
+
+  /* ============ CODE ============ */
+  pre {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 18px 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.83em;
+    line-height: 1.55;
+    margin: 15px 0;
+    page-break-inside: avoid;
+    border: 1px solid #1e293b;
+    -webkit-overflow-scrolling: touch;
+  }
+  code {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.88em;
+    color: #be123c;
+    word-break: break-word;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  /* ============ CODE LABEL ============ */
+  .code-label {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 6px 6px 0 0;
+    font-size: 0.8em;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: -4px;
+  }
+  .code-label.bad   { background: var(--danger); }
+  .code-label.good  { background: var(--success); }
+  .code-label.file  { background: var(--primary); }
+  .code-label.info  { background: var(--muted); }
+  .code-label.warn  { background: var(--warning); }
+
+  /* ============ BOXES ============ */
+  .box {
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin: 18px 0;
+    page-break-inside: avoid;
+  }
+  .box-info    { background: #eff6ff; border-left: 4px solid #3b82f6; }
+  .box-warning { background: #fffbeb; border-left: 4px solid var(--warning); }
+  .box-success { background: #ecfdf5; border-left: 4px solid var(--success); }
+  .box-danger  { background: #fef2f2; border-left: 4px solid var(--danger); }
+  .box strong  { display: block; margin-bottom: 4px; }
+
+  /* ============ TABLE ============ */
+  .table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 18px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+    page-break-inside: avoid;
+    min-width: 500px;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #f1f5f9;
+    color: var(--primary-dark);
+    font-weight: 600;
+  }
+  tr:nth-child(even) td { background: #fafafa; }
+
+  /* ============ PRINCIPLE ============ */
+  .principle {
+    background: #fff;
+    border-radius: 10px;
+    padding: 25px;
+    margin: 25px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    border-top: 5px solid var(--lsp);
+    page-break-inside: avoid;
+  }
+
+  /* ============ STEPS ============ */
+  .step {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+    page-break-inside: avoid;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.05em;
+  }
+  .step-body { flex: 1; min-width: 0; }
+  .step-body h4 { margin-top: 0; }
+
+  /* ============ CONCEPT CARDS ============ */
+  .concept-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+  }
+  .concept-card {
+    background: #f8fafc;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+    page-break-inside: avoid;
+  }
+  .concept-card h5 {
+    margin: 0 0 8px;
+    color: var(--primary-dark);
+    font-size: 1em;
+  }
+  .concept-card p {
+    margin: 0;
+    font-size: 0.88em;
+    color: var(--muted);
+  }
+  .concept-card .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 0.75em;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .tag-class     { background: #dbeafe; color: #1e40af; }
+  .tag-interface { background: #fce7f3; color: #9d174d; }
+  .tag-abstract  { background: #fef3c7; color: #92400e; }
+  .tag-poly      { background: #d1fae5; color: #065f46; }
+
+  /* ============ FLOW ============ */
+  .flow {
+    background: #f8fafc;
+    border: 1px dashed var(--border);
+    padding: 20px;
+    border-radius: 8px;
+    font-family: 'Consolas', monospace;
+    font-size: 0.85em;
+    line-height: 1.8;
+    color: var(--text);
+    page-break-inside: avoid;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* ============ COMPARE ============ */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 20px 0;
+  }
+  .compare > div {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .compare .bad-box  { border: 2px solid var(--danger); }
+  .compare .good-box { border: 2px solid var(--success); }
+  .compare .compare-header {
+    padding: 10px 15px;
+    font-weight: 700;
+    font-size: 0.9em;
+    color: #fff;
+  }
+  .compare .bad-box .compare-header  { background: var(--danger); }
+  .compare .good-box .compare-header { background: var(--success); }
+  .compare ul {
+    margin: 0;
+    padding: 15px 20px 15px 35px;
+    font-size: 0.9em;
+  }
+
+  /* ============ EXERCISE ============ */
+  .exercise {
+    background: #faf5ff;
+    border: 1px solid #d8b4fe;
+    border-left: 5px solid #9333ea;
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin: 20px 0;
+    page-break-inside: avoid;
+  }
+  .exercise h4 {
+    margin-top: 0;
+    color: #6b21a8;
+    font-size: 1.05em;
+  }
+  .exercise ol { padding-left: 22px; margin: 8px 0; }
+  .exercise li { margin: 6px 0; }
+
+  /* ============ ANALOGY ============ */
+  .analogy {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    border-left: 5px solid var(--warning);
+    page-break-inside: avoid;
+  }
+  .analogy h4 {
+    margin-top: 0;
+    color: #92400e;
+  }
+
+  /* ============ FOOTER ============ */
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 2px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.88em;
+  }
+  footer .signature {
+    margin-top: 20px;
+    text-align: right;
+    color: var(--text);
+    font-size: 0.95em;
+  }
+  footer .signature .name {
+    font-weight: 700;
+    color: var(--primary-dark);
+    font-size: 1.05em;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 768px) {
+    .container { padding: 25px 18px 50px; }
+    .cover h1 { font-size: 1.6em; }
+    .cover .lsp-badge { width: 55px; height: 55px; font-size: 2em; }
+    h2 { font-size: 1.3em; }
+    h3 { font-size: 1.1em; }
+    pre { font-size: 0.75em; padding: 14px 12px; }
+    .cover .info-card { padding: 15px 20px; min-width: auto; }
+    .cover .info-card .label { min-width: auto; }
+    .step-num { width: 32px; height: 32px; font-size: 0.95em; }
+    .compare { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    body { font-size: 15px; }
+    .container { padding: 20px 12px 40px; }
+    .cover { padding: 30px 10px 25px; }
+    .cover h1 { font-size: 1.35em; }
+    .cover .lsp-badge { width: 48px; height: 48px; font-size: 1.7em; }
+    .cover .subtitle { font-size: 0.92em; }
+    pre { font-size: 0.7em; padding: 12px 10px; }
+    h2 { font-size: 1.15em; padding-bottom: 6px; }
+    .principle { padding: 18px 14px; }
+    .box { padding: 12px 15px; }
+    .exercise { padding: 14px 16px; }
+  }
+
+  /* ============ PRINT ============ */
+  @media print {
+    body { background: #fff; font-size: 11pt; }
+    .container {
+      box-shadow: none;
+      max-width: 100%;
+      padding: 0;
+    }
+    pre {
+      background: #1e293b !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      font-size: 8.5pt;
+    }
+    .box, th, .principle, .exercise, .step-num, .code-label,
+    .concept-card, .cover .lsp-badge, .compare-header, .analogy {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .cover { page-break-after: always; }
+    h2, h3 { page-break-after: avoid; }
+    pre, .box, .exercise, .principle, table { page-break-inside: avoid; }
+    a { color: var(--text); text-decoration: none; }
+    .compare { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ================= COVER ================= -->
+  <div class="cover">
+    <p class="institution">Modul Praktikum Pemrograman Berbasis Objek</p>
+
+    <div class="lsp-badge">L</div>
+
+    <h1>Liskov Substitution<br>Principle (LSP)</h1>
+    <p class="subtitle">
+      Prinsip ketiga SOLID — "Objek turunan harus bisa menggantikan objek induknya tanpa merusak program"
+    </p>
+
+    <div class="info-card">
+      <p><span class="label">Mata Kuliah</span><span class="value">Praktikum Pemrograman Berbasis Objek</span></p>
+      <p><span class="label">Dosen Pengampu</span><span class="value">Syahru Rahmayuda</span></p>
+      <p><span class="label">Topik</span><span class="value">Liskov Substitution Principle</span></p>
+    </div>
+
+    <br>
+    <span class="badge">Modul Khusus LSP</span>
+  </div>
+
+  <!-- ================= TOC ================= -->
+  <div class="toc">
+    <h3>Daftar Isi</h3>
+    <ol>
+      <li><a href="#apa">Apa Itu Liskov Substitution Principle?</a></li>
+      <li><a href="#kenapa">Kenapa LSP Penting?</a></li>
+      <li><a href="#gejala">Gejala-Gejala Pelanggaran LSP</a></li>
+      <li><a href="#kode-salah">Kode yang Melanggar LSP (Studi Kasus Burung)</a></li>
+      <li><a href="#masalah">Analisis Masalah pada Kode Tersebut</a></li>
+      <li><a href="#kode-benar">Refactor: Menerapkan LSP</a></li>
+      <li><a href="#konsep-oop">Penggunaan Class, Interface, Abstract, dan Polimorfisme</a></li>
+      <li><a href="#banding">Perbandingan Sebelum vs Sesudah</a></li>
+      <li><a href="#aturan">Aturan Praktis LSP</a></li>
+      <li><a href="#struktur">Struktur Folder Final</a></li>
+      <li><a href="#kapan">Kapan LSP Bisa "Dilonggarkan"?</a></li>
+      <li><a href="#latihan">Latihan &amp; Tugas</a></li>
+      <li><a href="#referensi">Referensi</a></li>
+    </ol>
+  </div>
+
+  <!-- ================= 1. APA ================= -->
+  <h2 id="apa">1. Apa Itu Liskov Substitution Principle?</h2>
+
+  <div class="principle">
+    <p style="font-size: 1.1em; font-style: italic; color: var(--primary-dark); margin-bottom: 15px;">
+      "Objek turunan harus bisa <strong>menggantikan</strong> objek induknya
+      tanpa merusak program."
+    </p>
+    <p style="text-align: right; color: var(--muted); font-size: 0.9em; margin: 0;">
+      — Barbara Liskov (1987)
+    </p>
+  </div>
+
+  <p>
+    <strong>LSP</strong> adalah prinsip ketiga dari <strong>SOLID</strong>.
+    Intinya: kalau class <code>B</code> adalah turunan class <code>A</code>,
+    maka di mana pun <code>A</code> dipakai, <code>B</code> harus bisa dipakai
+    <strong>tanpa error atau perilaku aneh</strong>.
+  </p>
+
+  <p>
+    Dengan kata lain: <strong>turunan tidak boleh "menolak" perilaku induknya</strong>.
+    Kalau turunan terpaksa melempar exception di method yang seharusnya berjalan,
+    atau mengosongkan method yang wajib ada, itu tanda LSP dilanggar.
+  </p>
+
+  <div class="box box-info">
+    <strong>Analogi Sehari-hari</strong>
+    Bayangkan Anda punya <strong>remote TV universal</strong>. Remote ini
+    bisa menggantikan remote TV Samsung, LG, atau Sony — asalkan tombol
+    <em>power</em>, <em>volume</em>, dan <em>channel</em> berfungsi sama.
+    <br><br>
+    Kalau ada remote "turunan" yang tombol <em>volume</em>-nya malah melempar
+    error "tidak didukung", Anda tentu kecewa — karena remote itu <em>tidak bisa
+    menggantikan</em> remote asli.
+    <br><br>
+    <strong>Itulah inti LSP: turunan harus "kompatibel" dengan induknya.</strong>
+  </div>
+
+  <h3>1.1 Definisi Formal (Sederhana)</h3>
+  <p>Barbara Liskov merumuskan:</p>
+  <blockquote style="border-left: 4px solid var(--lsp); padding: 10px 20px; background: #fffbeb; margin: 15px 0; font-style: italic;">
+    "Jika <code>S</code> adalah subtipe dari <code>T</code>, maka objek bertipe
+    <code>T</code> dapat digantikan dengan objek bertipe <code>S</code> tanpa
+    mengubah kebenaran program."
+  </blockquote>
+  <p>
+    Dalam bahasa sehari-hari: <strong>kalau kode Anda bekerja dengan
+    <code>Bird</code>, maka kode itu juga harus bekerja dengan
+    <code>Eagle</code>, <code>Penguin</code>, atau turunan apa pun dari
+    <code>Bird</code></em> — tanpa perlu diubah.
+  </p>
+
+  <!-- ================= 2. KENAPA ================= -->
+  <h2 id="kenapa">2. Kenapa LSP Penting?</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th style="width:30%;">Aspek</th><th>Tanpa LSP</th><th>Dengan LSP</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Kode klien</strong></td>
+          <td>Harus cek tipe <code>if ($obj instanceof Penguin)</code></td>
+          <td>Tidak perlu cek — semua turunan bisa dipakai</td>
+        </tr>
+        <tr>
+          <td><strong>Kepercayaan pada hirarki</strong></td>
+          <td>Rendah — turunan bisa "berkhianat"</td>
+          <td>Tinggi — semua turunan konsisten</td>
+        </tr>
+        <tr>
+          <td><strong>Testing</strong></td>
+          <td>Sulit — tiap turunan punya perilaku aneh</td>
+          <td>Mudah — satu set test berlaku untuk semua</td>
+        </tr>
+        <tr>
+          <td><strong>Menambah turunan baru</strong></td>
+          <td>Berisiko — harus cek apakah merusak klien</td>
+          <td>Aman — selama patuh LSP</td>
+        </tr>
+        <tr>
+          <td><strong>Refactor</strong></td>
+          <td>Berisiko tinggi</td>
+          <td>Aman, terisolasi</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box box-success">
+    <strong>Manfaat Utama</strong>
+    LSP menjamin bahwa <strong>polimorfisme bekerja dengan benar</strong>.
+    Kalau LSP dilanggar, polimorfisme jadi "bumerang" — Anda pikir bisa
+    memperlakukan semua turunan sama, ternyata ada yang melempar exception
+    atau berperilaku beda.
+  </div>
+
+  <!-- ================= 3. GEJALA ================= -->
+  <h2 id="gejala">3. Gejala-Gejala Pelanggaran LSP</h2>
+
+  <p>Kenali tanda-tanda berikut di kode Anda:</p>
+
+  <ul>
+    <li>Ada method di turunan yang <strong>melempar exception</strong> karena "tidak didukung".</li>
+    <li>Ada method di turunan yang <strong>dikosongkan</strong> (tidak melakukan apa-apa) padahal induknya melakukan sesuatu.</li>
+    <li>Kode klien sering melakukan <code>if ($obj instanceof SomeType)</code> atau <code>if (get_class($obj) === 'Penguin')</code>.</li>
+    <li>Ada <code>switch</code> atau <code>match</code> berdasarkan tipe class turunan.</li>
+    <li>Turunan mengubah <strong>arti</strong> method induk (misal <code>withdraw()</code> di rekening yang tidak boleh minus malah menambah saldo).</li>
+    <li>Turunan mengubah <strong>tipe return</strong> menjadi lebih sempit dari yang dijanjikan induk (melanggar kontrak).</li>
+    <li>Ada komentar seperti <code>// jangan panggil method ini untuk class X</code>.</li>
+  </ul>
+
+  <div class="box box-warning">
+    <strong>Aturan Cepat</strong>
+    Kalau turunan <strong>terpaksa</strong> meng-override method induk hanya untuk
+    melempar exception atau "mengosongkan" perilaku, itu tanda kuat LSP dilanggar.
+    <br><br>
+    Solusinya: <strong>pecah interface menjadi lebih kecil</strong>, atau
+    <strong>ubah hirarki inheritance</strong>.
+  </div>
+
+  <!-- ================= 4. KODE SALAH ================= -->
+  <h2 id="kode-salah">4. Kode yang Melanggar LSP (Studi Kasus Burung)</h2>
+
+  <p>
+    Kita mulai dengan contoh klasik: <strong>Burung (Bird)</strong>. Secara
+    intuitif, burung bisa terbang. Tapi <em>penguin</em> juga burung —
+    dan penguin <strong>tidak bisa terbang</strong>.
+  </p>
+
+  <h3>4.1 Hirarki yang Salah</h3>
+
+  <span class="code-label bad">❌ SALAH — Melanggar LSP</span>
+  <pre><code>&lt;?php
+// src/Models/Bird.php
+namespace App\Models;
+
+class Bird
+{
+    public function fly(): string
+    {
+        return "Terbang tinggi!";
+    }
+
+    public function eat(): string
+    {
+        return "Makan.";
+    }
+}</code></pre>
+
+  <span class="code-label bad">❌ SALAH — Turunan yang "Menolak"</span>
+  <pre><code>&lt;?php
+// src/Models/Penguin.php
+namespace App\Models;
+
+class Penguin extends Bird
+{
+    public function fly(): string
+    {
+        throw new \Exception("Pinguin tidak bisa terbang!");
+    }
+}</code></pre>
+
+  <span class="code-label bad">❌ SALAH — Kode Klien yang Rapuh</span>
+  <pre><code>&lt;?php
+// index.php
+require_once __DIR__ . '/vendor/autoload.php';
+
+use App\Models\Bird;
+use App\Models\Penguin;
+use App\Models\Eagle;
+
+function makeItFly(Bird $bird): void
+{
+    // Kode ini mengandalkan bahwa SEMUA Bird bisa terbang
+    echo $bird->fly() . PHP_EOL;
+}
+
+// OK — Eagle bisa terbang
+makeItFly(new Eagle());
+
+// BOOM! — Penguin melempar exception
+makeItFly(new Penguin());</code></pre>
+
+  <div class="box box-danger">
+    <strong>Hasil Eksekusi</strong>
+    <pre style="margin: 8px 0 0; font-size: 0.8em;"><code>Terbang tinggi!
+PHP Fatal error: Uncaught Exception: Pinguin tidak bisa terbang!</code></pre>
+    Kode <code>makeItFly()</code> <strong>rusak</strong> saat diberi <code>Penguin</code>.
+    Padahal <code>Penguin</code> adalah <code>Bird</code>. <strong>Inilah pelanggaran LSP.</strong>
+  </div>
+
+  <h3>4.2 Kenapa Ini Melanggar LSP?</h3>
+
+  <p>
+    Ingat definisi: <em>"Objek turunan harus bisa menggantikan objek induknya
+    tanpa merusak program."</em>
+  </p>
+
+  <p>
+    Di kode di atas:
+  </p>
+  <ul>
+    <li><code>makeItFly()</code> menerima parameter <code>Bird</code> — artinya <strong>semua</strong> turunan <code>Bird</code> harus bisa dipakai di sini.</li>
+    <li>Namun <code>Penguin</code> (turunan <code>Bird</code>) <strong>tidak bisa</strong> dipakai — dia melempar exception.</li>
+    <li>Berarti <code>Penguin</code> <strong>tidak bisa menggantikan</strong> <code>Bird</code>. → <strong>LSP dilanggar.</strong></li>
+  </ul>
+
+  <div class="box box-warning">
+    <strong>Kenapa Ini Terjadi?</strong>
+    Karena class <code>Bird</code> <strong>menjanjikan</strong> bahwa semua
+    burung bisa terbang (lewat method <code>fly()</code>). Tapi kenyataannya
+    tidak semua burung bisa terbang. Janji itu <em>tidak bisa ditepati</em>
+    oleh <code>Penguin</code>.
+    <br><br>
+    <strong>Solusinya bukan menghapus Penguin, tapi memperbaiki janji (kontrak).</strong>
+  </div>
+
+  <!-- ================= 5. MASALAH ================= -->
+  <h2 id="masalah">5. Analisis Masalah pada Kode Tersebut</h2>
+
+  <p>Mari kita bedah: apa yang sebenarnya salah?</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>No</th><th>Masalah</th><th>Penjelasan</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Kontrak terlalu luas</td>
+          <td><code>Bird</code> menjanjikan <code>fly()</code> untuk <strong>semua</strong> burung. Padahal tidak semua burung bisa terbang.</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Turunan melempar exception</td>
+          <td><code>Penguin::fly()</code> melempar exception — artinya turunan <em>menolak</em> perilaku induk.</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Kode klien rusak</td>
+          <td><code>makeItFly()</code> yang seharusnya menerima semua <code>Bird</code>, ternyata crash saat diberi <code>Penguin</code>.</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Polimorfisme tidak bekerja</td>
+          <td>Anda tidak bisa memperlakukan <code>Penguin</code> seperti <code>Bird</code> pada umumnya.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>5.1 Dampak Nyata Pelanggaran Ini</h3>
+
+  <ul>
+    <li>
+      <strong>Kode klien jadi "penuh intaian"</strong> — setiap kali memakai
+      <code>Bird</code>, Anda harus cek <code>if ($bird instanceof Penguin)</code>.
+    </li>
+    <li>
+      <strong>Testing berantakan</strong> — test yang sama tidak bisa
+      berlaku untuk semua turunan.
+    </li>
+    <li>
+      <strong>Tidak bisa menambah turunan baru</strong> tanpa risiko —
+      setiap burung baru, Anda harus cek apakah bisa terbang atau tidak.
+    </li>
+    <li>
+      <strong>Melanggar "is-a" relationship</strong> — secara sintaks
+      <code>Penguin extends Bird</code>, tapi secara semantik <code>Penguin</code>
+      <strong>bukan</strong> <code>Bird</code> yang bisa terbang.
+    </li>
+  </ul>
+
+  <!-- ================= 6. KODE BENAR ================= -->
+  <h2 id="kode-benar">6. Refactor: Menerapkan LSP</h2>
+
+  <p>
+    Solusinya: <strong>pisahkan kemampuan "terbang" menjadi interface tersendiri</strong>.
+    Tidak semua burung harus bisa terbang — hanya burung yang memang bisa.
+  </p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Interface <code>Bird</code> — Kontrak Minimal</h4>
+      <p>
+        Kontrak dasar <strong>semua burung</strong>: hanya <code>eat()</code>.
+        Semua burung (termasuk penguin) pasti bisa makan. Ini janji yang
+        <strong>bisa ditepati oleh semua</strong>.
+      </p>
+      <span class="code-label info">INTERFACE</span>
+      <pre><code>&lt;?php
+// src/Contracts/Bird.php
+namespace App\Contracts;
+
+interface Bird
+{
+    public function eat(): string;
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Interface <code>FlyingBird</code> — Kontrak Tambahan</h4>
+      <p>
+        Interface ini <strong>extends Bird</strong> dan menambahkan kemampuan
+        <code>fly()</code>. Hanya burung yang <strong>memang bisa terbang</strong>
+        yang mengimplementasi interface ini.
+      </p>
+      <span class="code-label info">INTERFACE (extends)</span>
+      <pre><code>&lt;?php
+// src/Contracts/FlyingBird.php
+namespace App\Contracts;
+
+interface FlyingBird extends Bird
+{
+    public function fly(): string;
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Class <code>Eagle</code> — Burung yang Bisa Terbang</h4>
+      <p>
+        Elang mengimplementasi <code>FlyingBird</code> karena <strong>memang
+        bisa terbang</strong>. Kedua method (<code>eat()</code> dan
+        <code>fly()</code>) diimplementasi dengan benar.
+      </p>
+      <span class="code-label good">✅ LSP Terpenuhi</span>
+      <pre><code>&lt;?php
+// src/Models/Eagle.php
+namespace App\Models;
+
+use App\Contracts\FlyingBird;
+
+class Eagle implements FlyingBird
+{
+    public function eat(): string
+    {
+        return "Makan daging";
+    }
+
+    public function fly(): string
+    {
+        return "Terbang tinggi!";
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>Class <code>Penguin</code> — Burung yang Tidak Bisa Terbang</h4>
+      <p>
+        Penguin hanya mengimplementasi <code>Bird</code>, <strong>bukan</strong>
+        <code>FlyingBird</code>. Dia tidak perlu memaksakan diri punya method
+        <code>fly()</code>.
+      </p>
+      <span class="code-label good">✅ LSP Terpenuhi</span>
+      <pre><code>&lt;?php
+// src/Models/Penguin.php
+namespace App\Models;
+
+use App\Contracts\Bird;
+
+class Penguin implements Bird
+{
+    public function eat(): string
+    {
+        return "Makan ikan";
+    }
+
+    // Tidak perlu implement fly() — karena memang tidak bisa terbang
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h4>Class <code>Ostrich</code> — Contoh Lain</h4>
+      <p>
+        Burung unta juga tidak bisa terbang. Sama seperti penguin, dia
+        mengimplementasi <code>Bird</code> saja.
+      </p>
+      <span class="code-label good">✅ LSP Terpenuhi</span>
+      <pre><code>&lt;?php
+// src/Models/Ostrich.php
+namespace App\Models;
+
+use App\Contracts\Bird;
+
+class Ostrich implements Bird
+{
+    public function eat(): string
+    {
+        return "Makan tumbuhan";
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">6</div>
+    <div class="step-body">
+      <h4>Kode Klien — Sekarang Aman</h4>
+      <p>
+        Fungsi <code>feed()</code> menerima <code>Bird</code> — dan
+        <strong>semua</strong> burung bisa dipakai di sini tanpa error.
+        Fungsi <code>makeItFly()</code> menerima <code>FlyingBird</code> —
+        hanya burung yang bisa terbang.
+      </p>
+      <span class="code-label file">index.php</span>
+      <pre><code>&lt;?php
+require_once __DIR__ . '/vendor/autoload.php';
+
+use App\Contracts\Bird;
+use App\Contracts\FlyingBird;
+use App\Models\Eagle;
+use App\Models\Penguin;
+use App\Models\Ostrich;
+
+// Fungsi untuk semua burung (aman)
+function feed(Bird $bird): void
+{
+    echo $bird->eat() . PHP_EOL;
+}
+
+// Fungsi HANYA untuk burung yang bisa terbang
+function makeItFly(FlyingBird $bird): void
+{
+    echo $bird->fly() . PHP_EOL;
+}
+
+// Semua burung bisa makan
+feed(new Eagle());     // Makan daging
+feed(new Penguin());   // Makan ikan
+feed(new Ostrich());   // Makan tumbuhan
+
+// Hanya burung yang bisa terbang
+makeItFly(new Eagle());  // Terbang tinggi!
+
+// makeItFly(new Penguin());  // ❌ ERROR COMPILE — memang tidak boleh
+// makeItFly(new Ostrich());  // ❌ ERROR COMPILE — memang tidak boleh</code></pre>
+    </div>
+  </div>
+
+  <div class="box box-success">
+    <strong>Hasil Refactor</strong>
+    Sekarang:
+    <ul style="margin: 6px 0 0;">
+      <li><code>Bird</code> = janji yang <strong>semua burung bisa tepati</strong>.</li>
+      <li><code>FlyingBird</code> = janji tambahan untuk yang <strong>memang bisa terbang</strong>.</li>
+      <li><code>Penguin</code> dan <code>Ostrich</code> tidak dipaksa "berbohong" dengan method <code>fly()</code>.</li>
+      <li>Kode klien menjadi <strong>type-safe</strong> — error terdeteksi saat compile, bukan runtime.</li>
+    </ul>
+  </div>
+
+  <!-- ================= 7. KONSEP OOP ================= -->
+  <h2 id="konsep-oop">7. Penggunaan Class, Interface, Abstract, dan Polimorfisme</h2>
+
+  <p>
+    Refactor LSP di atas memanfaatkan konsep OOP secara tepat. Berikut
+    ringkasan penggunaan masing-masing konsep:
+  </p>
+
+  <div class="concept-cards">
+    <div class="concept-card">
+      <span class="tag tag-class">CLASS</span>
+      <h5>Class Biasa</h5>
+      <p>
+        <code>Eagle</code>, <code>Penguin</code>, <code>Ostrich</code> —
+        masing-masing adalah class konkret yang bisa langsung diinstansiasi
+        dengan <code>new</code>.
+        <br><br>
+        Setiap class hanya mengimplementasi kontrak yang <strong>memang
+        bisa ditepati</strong>.
+      </p>
+    </div>
+
+    <div class="concept-card">
+      <span class="tag tag-interface">INTERFACE</span>
+      <h5>Interface</h5>
+      <p>
+        <code>Bird</code> — kontrak minimal semua burung (<code>eat()</code>).<br>
+        <code>FlyingBird</code> — kontrak tambahan (<code>fly()</code>).
+        <br><br>
+        Interface memungkinkan kita memecah <strong>kontrak gemuk</strong>
+        menjadi <strong>kontrak kecil dan spesifik</strong> — inilah kunci LSP.
+      </p>
+    </div>
+
+    <div class="concept-card">
+      <span class="tag tag-abstract">ABSTRACT CLASS</span>
+      <h5>Abstract Class</h5>
+      <p>
+        Pada contoh ini <strong>tidak digunakan</strong> karena tidak ada
+        <em>logic bersama</em> yang perlu diwarisi. Interface sudah cukup.
+        <br><br>
+        (Akan dibahas di bagian 7.1 kapan abstract class tepat dipakai
+        dalam konteks LSP.)
+      </p>
+    </div>
+
+    <div class="concept-card">
+      <span class="tag tag-poly">POLIMORFISME</span>
+      <h5>Polimorfisme</h5>
+      <p>
+        <code>feed(Bird $bird)</code> bisa menerima <code>Eagle</code>,
+        <code>Penguin</code>, atau <code>Ostrich</code> — semua berperilaku
+        sesuai kontrak <code>eat()</code>.
+        <br><br>
+        Inilah polimorfisme yang <strong>sehat</strong> karena LSP terpenuhi.
+      </p>
+    </div>
+  </div>
+
+  <h3>7.1 Kapan Pakai Apa? (pada konteks LSP ini)</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Kebutuhan</th><th>Gunakan</th><th>Contoh di Modul Ini</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Kontrak minimal semua turunan</td>
+          <td><strong>Interface</strong></td>
+          <td><code>Bird</code> dengan <code>eat()</code></td>
+        </tr>
+        <tr>
+          <td>Kontrak tambahan untuk sebagian turunan</td>
+          <td><strong>Interface turunan</strong> (<code>extends</code>)</td>
+          <td><code>FlyingBird extends Bird</code></td>
+        </tr>
+        <tr>
+          <td>Class konkret dengan perilaku spesifik</td>
+          <td><strong>Class</strong></td>
+          <td><code>Eagle</code>, <code>Penguin</code>, <code>Ostrich</code></td>
+        </tr>
+        <tr>
+          <td>Ada logic bersama + kontrak</td>
+          <td><strong>Abstract class</strong></td>
+          <td>Lihat contoh di bawah (7.2)</td>
+        </tr>
+        <tr>
+          <td>Memperlakukan turunan secara seragam</td>
+          <td><strong>Polimorfisme</strong></td>
+          <td><code>feed(Bird $bird)</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>7.2 Kapan Abstract Class Dipakai dalam Konteks LSP?</h3>
+
+  <p>
+    Abstract class <strong>juga bisa dipakai</strong> untuk menerapkan LSP,
+    asalkan <strong>kontraknya jujur</strong>. Contoh: kita ingin semua burung
+    punya method <code>getName()</code> dengan format yang konsisten — sekaligus
+    tetap memisahkan kemampuan <code>fly()</code>.
+  </p>
+
+  <span class="code-label info">ABSTRACT CLASS — Kontrak + Logic Bersama</span>
+  <pre><code>&lt;?php
+// src/Abstracts/AbstractBird.php
+namespace App\Abstracts;
+
+use App\Contracts\Bird;
+
+abstract class AbstractBird implements Bird
+{
+    public function __construct(protected string $name) {}
+
+    // Method konkret — bisa dipakai semua turunan
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    // Method abstrak — WAJIB diimplementasi turunan
+    abstract public function eat(): string;
+}</code></pre>
+
+  <span class="code-label info">INTERFACE — Kontrak Tambahan</span>
+  <pre><code>&lt;?php
+// src/Contracts/FlyingBird.php
+namespace App\Contracts;
+
+interface FlyingBird extends Bird
+{
+    public function fly(): string;
+}</code></pre>
+
+  <span class="code-label good">✅ Turunan 1 — Bisa Terbang</span>
+  <pre><code>&lt;?php
+// src/Models/Eagle.php
+namespace App\Models;
+
+use App\Abstracts\AbstractBird;
+use App\Contracts\FlyingBird;
+
+class Eagle extends AbstractBird implements FlyingBird
+{
+    public function eat(): string
+    {
+        return $this->getName() . " makan daging";
+    }
+
+    public function fly(): string
+    {
+        return $this->getName() . " terbang tinggi!";
+    }
+}</code></pre>
+
+  <span class="code-label good">✅ Turunan 2 — Tidak Bisa Terbang</span>
+  <pre><code>&lt;?php
+// src/Models/Penguin.php
+namespace App\Models;
+
+use App\Abstracts\AbstractBird;
+
+class Penguin extends AbstractBird
+{
+    public function eat(): string
+    {
+        return $this->getName() . " makan ikan";
+    }
+
+    // Tidak implement fly() — karena memang tidak bisa terbang
+}</code></pre>
+
+  <p><strong>Kode klien:</strong></p>
+  <pre><code>&lt;?php
+use App\Contracts\Bird;
+use App\Contracts\FlyingBird;
+use App\Models\Eagle;
+use App\Models\Penguin;
+
+function feed(Bird $bird): void
+{
+    echo $bird->eat() . PHP_EOL;
+}
+
+function makeItFly(FlyingBird $bird): void
+{
+    echo $bird->fly() . PHP_EOL;
+}
+
+feed(new Eagle('Elang'));
+feed(new Penguin('Pinguin'));   // OK — semua Bird punya eat()
+makeItFly(new Eagle('Elang'));  // OK — Eagle bisa terbang
+// makeItFly(new Penguin('Pinguin'));  // ❌ ERROR COMPILE — tidak boleh</code></pre>
+
+  <div class="box box-success">
+    <strong>Pola Kombinasi Interface + Abstract Class</strong>
+    <ul style="margin: 6px 0 0;">
+      <li><strong>Interface <code>Bird</code></strong> — kontrak resmi yang bisa di-type-hint.</li>
+      <li><strong>Interface <code>FlyingBird</code></strong> — kontrak tambahan yang spesifik.</li>
+      <li><strong>Abstract class <code>AbstractBird</code></strong> — implementasi umum (logic bersama, property <code>name</code>).</li>
+      <li><strong>Class konkret</strong> — implementasi spesifik.</li>
+    </ul>
+    Inilah pola yang paling umum dipakai di framework modern (Laravel, Symfony).
+  </div>
+
+  <!-- ================= 8. BANDING ================= -->
+  <h2 id="banding">8. Perbandingan Sebelum vs Sesudah</h2>
+
+  <div class="compare">
+    <div class="bad-box">
+      <div class="compare-header">❌ SEBELUM (Melanggar LSP)</div>
+      <ul>
+        <li>Satu interface <code>Bird</code> dengan method <code>fly()</code></li>
+        <li><code>Penguin::fly()</code> melempar exception</li>
+        <li>Kode klien crash saat diberi <code>Penguin</code></li>
+        <li>Harus cek <code>instanceof</code> manual</li>
+        <li>Polimorfisme tidak bekerja</li>
+        <li>Tambah burung baru = berisiko</li>
+      </ul>
+    </div>
+    <div class="good-box">
+      <div class="compare-header">✅ SESUDAH (LSP Terpenuhi)</div>
+      <ul>
+        <li>Interface <code>Bird</code> hanya <code>eat()</code></li>
+        <li>Interface <code>FlyingBird</code> untuk yang bisa terbang</li>
+        <li><code>Penguin</code> tidak punya <code>fly()</code> — tidak memaksakan diri</li>
+        <li>Kode klien aman, error terdeteksi saat compile</li>
+        <li>Polimorfisme bekerja penuh</li>
+        <li>Tambah burung baru = aman</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Aspek</th><th>❌ Sebelum LSP</th><th>✅ Sesudah LSP</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Jumlah interface</strong></td>
+          <td>1 (<code>Bird</code> dengan <code>fly()</code>)</td>
+          <td>2 (<code>Bird</code>, <code>FlyingBird</code>)</td>
+        </tr>
+        <tr>
+          <td><strong>Method di Penguin</strong></td>
+          <td>2 (dengan <code>fly()</code> melempar exception)</td>
+          <td>1 (hanya <code>eat()</code>)</td>
+        </tr>
+        <tr>
+          <td><strong>Kode klien</strong></td>
+          <td>Crash saat diberi <code>Penguin</code></td>
+          <td>Aman, error terdeteksi di compile</td>
+        </tr>
+        <tr>
+          <td><strong>Type safety</strong></td>
+          <td>Rendah</td>
+          <td>Tinggi</td>
+        </tr>
+        <tr>
+          <td><strong>Polimorfisme</strong></td>
+          <td>Tidak bekerja</td>
+          <td>Bekerja penuh</td>
+        </tr>
+        <tr>
+          <td><strong>Menambah burung baru</strong></td>
+          <td>Berisiko</td>
+          <td>Aman</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ================= 9. ATURAN ================= -->
+  <h2 id="aturan">9. Aturan Praktis LSP</h2>
+
+  <p>Berikut aturan praktis yang bisa Anda hafal untuk menghindari pelanggaran LSP:</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th style="width:35%;">Aturan</th><th>Penjelasan</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Jangan lempar exception baru</strong></td>
+          <td>Turunan tidak boleh melempar exception yang tidak dilempar induk, untuk method yang sama.</td>
+        </tr>
+        <tr>
+          <td><strong>Jangan kosongkan method</strong></td>
+          <td>Kalau induk punya method yang "melakukan sesuatu", turunan tidak boleh mengosongkannya.</td>
+        </tr>
+        <tr>
+          <td><strong>Pertahankan kontrak</strong></td>
+          <td>Kalau induk menjanjikan <code>return string</code>, turunan tidak boleh <code>return null</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>Jangan perketat parameter</strong></td>
+          <td>Kalau induk menerima <code>int</code>, turunan tidak boleh hanya menerima <code>int &gt; 0</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>Jangan longgarkan postcondition</strong></td>
+          <td>Kalau induk menjamin "saldo tidak negatif", turunan tidak boleh membuat saldo negatif.</td>
+        </tr>
+        <tr>
+          <td><strong>Pecah interface gemuk</strong></td>
+          <td>Lebih baik banyak interface kecil daripada satu interface besar yang memaksa turunan "berbohong".</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box box-warning">
+    <strong>Aturan Emas</strong>
+    Saat membuat turunan, tanyakan:
+    <br><br>
+    <em>"Apakah turunan ini bisa <strong>menggantikan</strong> induknya di
+    <strong>semua</strong> tempat tanpa mengubah perilaku program?"</em>
+    <br><br>
+    Kalau <strong>tidak</strong>, berarti ada pelanggaran LSP. Perbaiki
+    hirarki atau pecah interface.
+  </div>
+
+  <!-- ================= 10. STRUKTUR ================= -->
+  <h2 id="struktur">10. Struktur Folder Final</h2>
+
+  <div class="tree">
+php-lsp/
+├── <span class="file">composer.json</span>
+├── <span class="file">index.php</span>
+└── <span class="folder">src/</span>
+    ├── <span class="folder">Contracts/</span>
+    │   ├── <span class="file">Bird.php</span>              <span style="color:#64748b">(interface)</span>
+    │   └── <span class="file">FlyingBird.php</span>        <span style="color:#64748b">(interface extends Bird)</span>
+    ├── <span class="folder">Abstracts/</span>
+    │   └── <span class="file">AbstractBird.php</span>      <span style="color:#64748b">(abstract class)</span>
+    └── <span class="folder">Models/</span>
+        ├── <span class="file">Eagle.php</span>             <span style="color:#64748b">(FlyingBird)</span>
+        ├── <span class="file">Penguin.php</span>           <span style="color:#64748b">(Bird)</span>
+        └── <span class="file">Ostrich.php</span>           <span style="color:#64748b">(Bird)</span>
+  </div>
+
+  <p><strong>Contoh <code>composer.json</code>:</strong></p>
+  <pre><code>{
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}</code></pre>
+
+  <p>Setelah semua file dibuat, jalankan:</p>
+  <pre><code>composer dump-autoload -o
+php index.php</code></pre>
+
+  <!-- ================= 11. KAPAN ================= -->
+  <h2 id="kapan">11. Kapan LSP Bisa "Dilonggarkan"?</h2>
+
+  <p>
+    LSP adalah pedoman, bukan hukum mutlak. Ada situasi di mana penerapan
+    LSP secara ketat justru <em>over-engineering</em>:
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Situasi</th><th>Boleh Dilonggarkan?</th><th>Alasan</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Project kecil (1–3 class)</td>
+          <td>Ya</td>
+          <td>Memecah terlalu banyak interface = overhead tanpa manfaat</td>
+        </tr>
+        <tr>
+          <td>Prototyping cepat</td>
+          <td>Ya</td>
+          <td>Fokus ke fungsionalitas dulu, refactor nanti</td>
+        </tr>
+        <tr>
+          <td>Hirarki sangat stabil</td>
+          <td>Ya, tapi hati-hati</td>
+          <td>Selama tidak ada turunan baru yang "menolak" perilaku induk</td>
+        </tr>
+        <tr>
+          <td>Aplikasi sedang tumbuh</td>
+          <td>Mulai ketat</td>
+          <td>Saat mulai ada banyak <code>if ($obj instanceof X)</code> di kode klien</td>
+        </tr>
+        <tr>
+          <td>Tim besar, jangka panjang</td>
+          <td>Wajib LSP ketat</td>
+          <td>Mencegah bug tersembunyi &amp; memudahkan maintenance bertahun-tahun</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box box-info">
+    <strong>Hubungan dengan Prinsip Lain</strong>
+    LSP sangat erat kaitannya dengan <strong>Interface Segregation Principle (I)</strong>.
+    Saat LSP dilanggar, sering kali solusinya adalah <strong>memecah interface gemuk</strong>
+    menjadi interface kecil — dan itulah inti ISP.
+    <br><br>
+    LSP juga terkait <strong>Open/Closed Principle (O)</strong>: kalau turunan
+    tidak bisa menggantikan induk, maka "menambah turunan" tidak benar-benar
+    menjadi "ekstensi" — melainkan "modifikasi perilaku" yang berisiko.
+  </div>
+
+  <!-- ================= 12. LATIHAN ================= -->
+  <h2 id="latihan">12. Latihan &amp; Tugas</h2>
+
+  <div class="exercise">
+    <h4>Latihan 1 — Identifikasi Pelanggaran LSP</h4>
+    <p>Perhatikan kode berikut, lalu jawab pertanyaan:</p>
+    <pre><code>&lt;?php
+class Rectangle
+{
+    protected float $width;
+    protected float $height;
+
+    public function setWidth(float $width): void
+    {
+        $this->width = $width;
+    }
+
+    public function setHeight(float $height): void
+    {
+        $this->height = $height;
+    }
+
+    public function getArea(): float
+    {
+        return $this->width * $this->height;
+    }
+}
+
+class Square extends Rectangle
+{
+    public function setWidth(float $width): void
+    {
+        $this->width = $width;
+        $this->height = $width;  // paksa tinggi = lebar
+    }
+
+    public function setHeight(float $height): void
+    {
+        $this->width = $height;
+        $this->height = $height;
+    }
+}</code></pre>
+    <ol>
+      <li>Mengapa class <code>Square</code> melanggar LSP?</li>
+      <li>Buat kode klien yang akan <strong>crash</strong> atau salah hasil saat diberi <code>Square</code>.</li>
+      <li>Sebutkan minimal <strong>3 cara</strong> untuk memperbaikinya.</li>
+    </ol>
+    <p><em>(Ini adalah contoh klasik "Rectangle-Square Problem" — pelanggaran LSP paling terkenal di dunia OOP.)</em></p>
+  </div>
+
+  <div class="exercise">
+    <h4>Latihan 2 — Refactor Hirarki</h4>
+    <p>Refactor kode di Latihan 1 agar LSP terpenuhi. Pilih salah satu pendekatan:</p>
+    <ul>
+      <li><strong>Pendekatan A</strong> — Buat abstract class <code>Shape</code> dengan method <code>getArea()</code>. <code>Rectangle</code> dan <code>Square</code> meng-extends <code>Shape</code> secara terpisah.</li>
+      <li><strong>Pendekatan B</strong> — Buat interface <code>Shape</code> dengan method <code>getArea()</code>, lalu <code>Rectangle</code> dan <code>Square</code> mengimplementasi interface tersebut secara terpisah.</li>
+      <li><strong>Pendekatan C</strong> — Tambahkan interface <code>Resizable</code> hanya untuk shape yang bisa di-resize.</li>
+    </ul>
+    <p>Bandingkan ketiga pendekatan dan pilih mana yang paling tepat untuk kasus ini.</p>
+  </div>
+
+  <div class="exercise">
+    <h4>Latihan 3 — Sistem Pembayaran</h4>
+    <p>Perhatikan hirarki class berikut yang melanggar LSP:</p>
+    <pre><code>abstract class PaymentMethod
+{
+    abstract public function pay(float $amount): string;
+    abstract public function refund(float $amount): string;
+}
+
+class CashPayment extends PaymentMethod
+{
+    public function pay(float $amount): string  { return "Bayar tunai: $amount"; }
+    public function refund(float $amount): string
+    {
+        throw new \Exception("Tunai tidak bisa direfund!");
+    }
+}</code></pre>
+    <p>Tugas:</p>
+    <ol>
+      <li>Jelaskan mengapa <code>CashPayment</code> melanggar LSP.</li>
+      <li>Refactor dengan <strong>memisahkan interface</strong> <code>Payable</code> dan <code>Refundable</code>.</li>
+      <li>Buat class: <code>CashPayment</code> (hanya <code>Payable</code>), <code>CreditCardPayment</code> (keduanya), <code>EwalletPayment</code> (keduanya).</li>
+      <li>Tunjukkan bahwa kode klien aman di semua kasus.</li>
+    </ol>
+  </div>
+
+  <div class="exercise">
+    <h4>Tugas Akhir — Audit LSP pada Project Sebelumnya</h4>
+    <p>
+      Ambil salah satu project PHP Anda yang punya <em>inheritance</em>
+      (class extends class), lalu audit LSP:
+    </p>
+    <ol>
+      <li>Identifikasi setiap turunan yang <strong>meng-override</strong> method induknya.</li>
+      <li>Untuk setiap override, periksa:
+        <ul>
+          <li>Apakah turunan melempar exception baru?</li>
+          <li>Apakah turunan mengosongkan perilaku?</li>
+          <li>Apakah turunan mengubah kontrak (return type, parameter)?</li>
+        </ul>
+      </li>
+      <li>Refactor hirarki agar LSP terpenuhi — bisa dengan memecah interface, memakai abstract class, atau mengganti inheritance menjadi komposisi.</li>
+      <li>Buat class diagram <em>sebelum</em> dan <em>sesudah</em>.</li>
+      <li>Kumpulkan laporan PDF + ZIP project.</li>
+    </ol>
+    <p>
+      <strong>Nama file:</strong> <code>PBO_LSP_NamaAnda_NIM.zip</code>
+    </p>
+  </div>
+
+  <!-- ================= 13. REFERENSI ================= -->
+  <h2 id="referensi">13. Referensi</h2>
+  <ul>
+    <li>Liskov, Barbara — <em>Data Abstraction and Hierarchy</em>. SIGPLAN Notices, 1988. (Asal prinsip LSP)</li>
+    <li>Martin, Robert C. — <em>Clean Architecture: A Craftsman's Guide to Software Structure and Design</em>. Prentice Hall, 2017. (Bab 9: LSP)</li>
+    <li>Martin, Robert C. — <em>Agile Software Development, Principles, Patterns, and Practices</em>. Prentice Hall, 2002.</li>
+    <li>Refactoring Guru — <em>Liskov Substitution Principle</em>: <em>https://refactoring.guru/design-patterns/solid</em></li>
+    <li>PHP The Right Way — <em>Design Patterns</em>: <em>https://phptherightway.com/</em></li>
+    <li>PHP-FIG PSR-4 — <em>Autoloading Standard</em>: <em>https://www.php-fig.org/psr/psr-4/</em></li>
+  </ul>
+
+  <!-- ================= FOOTER ================= -->
+  <footer>
+    <p><strong>Modul Praktikum Pemrograman Berbasis Objek — Liskov Substitution Principle</strong></p>
+    <p>Bagian dari Modul SOLID · Disusun untuk Pembelajaran OOP Praktis</p>
+    <p style="font-size: 0.85em;">Dicetak dari browser via <em>Print → Save as PDF</em></p>
+
+    <div class="signature">
+      <p>Dosen Pengampu,</p>
+      <br><br>
+      <p class="name">Syahru Rahmayuda</p>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

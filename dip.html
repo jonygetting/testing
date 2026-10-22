@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul DIP — Dependency Inversion Principle | Praktikum PBO</title>
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-dark: #3730a3;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --code-bg: #0f172a;
+    --code-text: #e2e8f0;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --dip: #ec4899;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+
+  .container {
+    max-width: 950px;
+    margin: 0 auto;
+    padding: 40px 30px 80px;
+    background: var(--card);
+    box-shadow: 0 0 30px rgba(0,0,0,0.05);
+    min-height: 100vh;
+  }
+
+  /* ============ COVER ============ */
+  .cover {
+    text-align: center;
+    padding: 50px 20px 40px;
+    border-bottom: 3px solid var(--primary);
+    margin-bottom: 40px;
+  }
+  .cover .institution {
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--primary-dark);
+    letter-spacing: 1.5px;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+  }
+  .cover h1 {
+    font-size: 2.2em;
+    color: var(--primary-dark);
+    margin: 15px 0 8px;
+    line-height: 1.2;
+  }
+  .cover .dip-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    background: var(--dip);
+    color: #fff;
+    font-size: 2.5em;
+    font-weight: 800;
+    border-radius: 50%;
+    margin: 15px 0;
+    box-shadow: 0 4px 15px rgba(236,72,153,0.35);
+  }
+  .cover .subtitle {
+    font-size: 1.05em;
+    color: var(--muted);
+    margin: 15px 0 25px;
+    font-style: italic;
+    max-width: 620px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .cover .info-card {
+    background: linear-gradient(135deg, #f1f5f9 0%, #fce7f3 100%);
+    display: inline-block;
+    padding: 20px 35px;
+    border-radius: 12px;
+    margin-top: 20px;
+    text-align: left;
+    border: 2px solid var(--border);
+    min-width: 300px;
+    max-width: 100%;
+  }
+  .cover .info-card p {
+    margin: 6px 0;
+    font-size: 0.95em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .cover .info-card .label {
+    color: var(--muted);
+    min-width: 130px;
+  }
+  .cover .info-card .value {
+    font-weight: 700;
+    color: var(--primary-dark);
+    flex: 1;
+  }
+  .cover .badge {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    padding: 8px 22px;
+    border-radius: 20px;
+    font-size: 0.88em;
+    letter-spacing: 0.5px;
+    margin-top: 20px;
+  }
+
+  /* ============ HEADINGS ============ */
+  h2 {
+    font-size: 1.5em;
+    color: var(--primary-dark);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 8px;
+    margin-top: 45px;
+    page-break-after: avoid;
+  }
+
+  h3 {
+    font-size: 1.2em;
+    color: var(--text);
+    margin-top: 30px;
+    page-break-after: avoid;
+  }
+
+  h4 {
+    font-size: 1.05em;
+    color: var(--primary);
+    margin-top: 22px;
+    page-break-after: avoid;
+  }
+
+  p { margin: 12px 0; }
+
+  /* ============ TOC ============ */
+  .toc {
+    background: #f1f5f9;
+    border-left: 4px solid var(--primary);
+    padding: 20px 25px;
+    border-radius: 6px;
+    margin: 30px 0;
+  }
+  .toc h3 { margin-top: 0; color: var(--primary-dark); }
+  .toc ol { margin: 0; padding-left: 20px; }
+  .toc li { margin: 6px 0; }
+  .toc a { color: var(--text); text-decoration: none; }
+  .toc a:hover { color: var(--primary); }
+
+  /* ============ CODE ============ */
+  pre {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 18px 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.83em;
+    line-height: 1.55;
+    margin: 15px 0;
+    page-break-inside: avoid;
+    border: 1px solid #1e293b;
+    -webkit-overflow-scrolling: touch;
+  }
+  code {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.88em;
+    color: #be123c;
+    word-break: break-word;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  /* ============ CODE LABEL ============ */
+  .code-label {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 6px 6px 0 0;
+    font-size: 0.8em;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: -4px;
+  }
+  .code-label.bad   { background: var(--danger); }
+  .code-label.good  { background: var(--success); }
+  .code-label.file  { background: var(--primary); }
+  .code-label.info  { background: var(--muted); }
+  .code-label.warn  { background: var(--warning); }
+
+  /* ============ BOXES ============ */
+  .box {
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin: 18px 0;
+    page-break-inside: avoid;
+  }
+  .box-info    { background: #eff6ff; border-left: 4px solid #3b82f6; }
+  .box-warning { background: #fffbeb; border-left: 4px solid var(--warning); }
+  .box-success { background: #ecfdf5; border-left: 4px solid var(--success); }
+  .box-danger  { background: #fef2f2; border-left: 4px solid var(--danger); }
+  .box strong  { display: block; margin-bottom: 4px; }
+
+  /* ============ TABLE ============ */
+  .table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 18px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+    page-break-inside: avoid;
+    min-width: 500px;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #f1f5f9;
+    color: var(--primary-dark);
+    font-weight: 600;
+  }
+  tr:nth-child(even) td { background: #fafafa; }
+
+  /* ============ PRINCIPLE ============ */
+  .principle {
+    background: #fff;
+    border-radius: 10px;
+    padding: 25px;
+    margin: 25px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    border-top: 5px solid var(--dip);
+    page-break-inside: avoid;
+  }
+
+  /* ============ STEPS ============ */
+  .step {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+    page-break-inside: avoid;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.05em;
+  }
+  .step-body { flex: 1; min-width: 0; }
+  .step-body h4 { margin-top: 0; }
+
+  /* ============ CONCEPT CARDS ============ */
+  .concept-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+  }
+  .concept-card {
+    background: #f8fafc;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+    page-break-inside: avoid;
+  }
+  .concept-card h5 {
+    margin: 0 0 8px;
+    color: var(--primary-dark);
+    font-size: 1em;
+  }
+  .concept-card p {
+    margin: 0;
+    font-size: 0.88em;
+    color: var(--muted);
+  }
+  .concept-card .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 0.75em;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .tag-class     { background: #dbeafe; color: #1e40af; }
+  .tag-interface { background: #fce7f3; color: #9d174d; }
+  .tag-abstract  { background: #fef3c7; color: #92400e; }
+  .tag-poly      { background: #d1fae5; color: #065f46; }
+
+  /* ============ FLOW ============ */
+  .flow {
+    background: #f8fafc;
+    border: 1px dashed var(--border);
+    padding: 20px;
+    border-radius: 8px;
+    font-family: 'Consolas', monospace;
+    font-size: 0.85em;
+    line-height: 1.8;
+    color: var(--text);
+    page-break-inside: avoid;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* ============ COMPARE ============ */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 20px 0;
+  }
+  .compare > div {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .compare .bad-box  { border: 2px solid var(--danger); }
+  .compare .good-box { border: 2px solid var(--success); }
+  .compare .compare-header {
+    padding: 10px 15px;
+    font-weight: 700;
+    font-size: 0.9em;
+    color: #fff;
+  }
+  .compare .bad-box .compare-header  { background: var(--danger); }
+  .compare .good-box .compare-header { background: var(--success); }
+  .compare ul {
+    margin: 0;
+    padding: 15px 20px 15px 35px;
+    font-size: 0.9em;
+  }
+
+  /* ============ EXERCISE ============ */
+  .exercise {
+    background: #faf5ff;
+    border: 1px solid #d8b4fe;
+    border-left: 5px solid #9333ea;
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin: 20px 0;
+    page-break-inside: avoid;
+  }
+  .exercise h4 {
+    margin-top: 0;
+    color: #6b21a8;
+    font-size: 1.05em;
+  }
+  .exercise ol { padding-left: 22px; margin: 8px 0; }
+  .exercise li { margin: 6px 0; }
+
+  /* ============ ANALOGY ============ */
+  .analogy {
+    background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    border-left: 5px solid var(--dip);
+    page-break-inside: avoid;
+  }
+  .analogy h4 {
+    margin-top: 0;
+    color: #9d174d;
+  }
+
+  /* ============ FOOTER ============ */
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 2px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.88em;
+  }
+  footer .signature {
+    margin-top: 20px;
+    text-align: right;
+    color: var(--text);
+    font-size: 0.95em;
+  }
+  footer .signature .name {
+    font-weight: 700;
+    color: var(--primary-dark);
+    font-size: 1.05em;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 768px) {
+    .container { padding: 25px 18px 50px; }
+    .cover h1 { font-size: 1.6em; }
+    .cover .dip-badge { width: 55px; height: 55px; font-size: 2em; }
+    h2 { font-size: 1.3em; }
+    h3 { font-size: 1.1em; }
+    pre { font-size: 0.75em; padding: 14px 12px; }
+    .cover .info-card { padding: 15px 20px; min-width: auto; }
+    .cover .info-card .label { min-width: auto; }
+    .step-num { width: 32px; height: 32px; font-size: 0.95em; }
+    .compare { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    body { font-size: 15px; }
+    .container { padding: 20px 12px 40px; }
+    .cover { padding: 30px 10px 25px; }
+    .cover h1 { font-size: 1.35em; }
+    .cover .dip-badge { width: 48px; height: 48px; font-size: 1.7em; }
+    .cover .subtitle { font-size: 0.92em; }
+    pre { font-size: 0.7em; padding: 12px 10px; }
+    h2 { font-size: 1.15em; padding-bottom: 6px; }
+    .principle { padding: 18px 14px; }
+    .box { padding: 12px 15px; }
+    .exercise { padding: 14px 16px; }
+  }
+
+  /* ============ PRINT ============ */
+  @media print {
+    body { background: #fff; font-size: 11pt; }
+    .container {
+      box-shadow: none;
+      max-width: 100%;
+      padding: 0;
+    }
+    pre {
+      background: #1e293b !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      font-size: 8.5pt;
+    }
+    .box, th, .principle, .exercise, .step-num, .code-label,
+    .concept-card, .cover .dip-badge, .compare-header, .analogy {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .cover { page-break-after: always; }
+    h2, h3 { page-break-after: avoid; }
+    pre, .box, .exercise, .principle, table { page-break-inside: avoid; }
+    a { color: var(--text); text-decoration: none; }
+    .compare { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ================= COVER ================= -->
+  <div class="cover">
+    <p class="institution">Modul Praktikum Pemrograman Berbasis Objek</p>
+
+    <div class="dip-badge">D</div>
+
+    <h1>Dependency Inversion<br>Principle (DIP)</h1>
+    <p class="subtitle">
+      Prinsip kelima SOLID — "Bergantunglah pada abstraksi (interface), bukan pada implementasi konkret"
+    </p>
+
+    <div class="info-card">
+      <p><span class="label">Mata Kuliah</span><span class="value">Praktikum Pemrograman Berbasis Objek</span></p>
+      <p><span class="label">Dosen Pengampu</span><span class="value">Syahru Rahmayuda</span></p>
+      <p><span class="label">Topik</span><span class="value">Dependency Inversion Principle</span></p>
+    </div>
+
+    <br>
+    <span class="badge">Modul Khusus DIP</span>
+  </div>
+
+  <!-- ================= TOC ================= -->
+  <div class="toc">
+    <h3>Daftar Isi</h3>
+    <ol>
+      <li><a href="#apa">Apa Itu Dependency Inversion Principle?</a></li>
+      <li><a href="#dua-bagian">Dua Bagian DIP yang Sering Terlewat</a></li>
+      <li><a href="#kenapa">Kenapa DIP Penting?</a></li>
+      <li><a href="#gejala">Gejala-Gejala Pelanggaran DIP</a></li>
+      <li><a href="#kode-salah">Kode yang Melanggar DIP (Studi Kasus UserService)</a></li>
+      <li><a href="#masalah">Analisis Masalah pada Kode Tersebut</a></li>
+      <li><a href="#kode-benar">Refactor: Menerapkan DIP dengan Dependency Injection</a></li>
+      <li><a href="#konsep-oop">Penggunaan Class, Interface, Abstract, dan Polimorfisme</a></li>
+      <li><a href="#banding">Perbandingan Sebelum vs Sesudah</a></li>
+      <li><a href="#aturan">Aturan Praktis DIP</a></li>
+      <li><a href="#struktur">Struktur Folder Final</a></li>
+      <li><a href="#kaitan">Kaitan dengan Prinsip SOLID Lain</a></li>
+      <li><a href="#latihan">Latihan &amp; Tugas</a></li>
+      <li><a href="#referensi">Referensi</a></li>
+    </ol>
+  </div>
+
+  <!-- ================= 1. APA ================= -->
+  <h2 id="apa">1. Apa Itu Dependency Inversion Principle?</h2>
+
+  <div class="principle">
+    <p style="font-size: 1.1em; font-style: italic; color: var(--primary-dark); margin-bottom: 15px;">
+      "Bergantunglah pada <strong>abstraksi</strong> (interface), bukan pada
+      <strong>implementasi konkret</strong>."
+    </p>
+    <p style="text-align: right; color: var(--muted); font-size: 0.9em; margin: 0;">
+      — Robert C. Martin (Uncle Bob)
+    </p>
+  </div>
+
+  <p>
+    <strong>DIP</strong> adalah prinsip kelima — dan terakhir — dari
+    <strong>SOLID</strong>. Intinya: class tingkat tinggi (Service) tidak boleh
+    bergantung langsung pada class tingkat rendah (MySQL, Email, File). Keduanya
+    harus bergantung pada <strong>interface</strong>.
+  </p>
+
+  <p>
+    Dengan kata lain: <strong>balik arah ketergantungan</strong>. Jangan
+    <code>UserService</code> yang "memanggil" <code>MySQLDatabase</code>, tapi
+    <code>UserService</code> menerima <code>DatabaseInterface</code> dari luar.
+  </p>
+
+  <div class="box box-info">
+    <strong>Analogi Sehari-hari</strong>
+    Bayangkan <strong>lampu meja</strong> yang kabelnya <em>disolder langsung</em>
+    ke stop kontak dinding. Kalau lampu rusak, Anda harus bongkar dinding.
+    <br><br>
+    Bandingkan dengan lampu yang pakai <strong>colokan standar</strong>. Lampu
+    apa pun (Philips, Xiaomi, IKEA) bisa dicolok ke stop kontak yang sama.
+    Kalau lampu rusak, cukup cabut dan ganti — dinding tidak tersentuh.
+    <br><br>
+    <strong>DIP mengajarkan: buat "colokan standar" (interface), bukan solder langsung.</strong>
+  </div>
+
+  <h3>1.1 Definisi Formal (Sederhana)</h3>
+  <blockquote style="border-left: 4px solid var(--dip); padding: 10px 20px; background: #fdf2f8; margin: 15px 0; font-style: italic;">
+    "Modul tingkat tinggi tidak boleh bergantung pada modul tingkat rendah.
+    Keduanya harus bergantung pada abstraksi."
+  </blockquote>
+  <p>
+    Artinya:
+  </p>
+  <ul>
+    <li><strong>Modul tingkat tinggi</strong> = class yang berisi <em>logika bisnis</em> (misal <code>UserService</code>).</li>
+    <li><strong>Modul tingkat rendah</strong> = class yang berisi <em>detail teknis</em> (misal <code>MySQLDatabase</code>, <code>EmailSender</code>, <code>FileLogger</code>).</li>
+    <li><strong>Abstraksi</strong> = interface yang menjembatani keduanya (misal <code>DatabaseInterface</code>).</li>
+  </ul>
+
+  <!-- ================= 2. DUA BAGIAN ================= -->
+  <h2 id="dua-bagian">2. Dua Bagian DIP yang Sering Terlewat</h2>
+
+  <p>
+    DIP sebenarnya terdiri dari <strong>dua bagian</strong>. Banyak mahasiswa
+    hanya menghafal bagian pertama, padahal bagian kedua sama pentingnya.
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th style="width:8%;">No</th><th style="width:42%;">Bagian</th><th>Penjelasan</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1</strong></td>
+          <td><strong>Modul tingkat tinggi tidak boleh bergantung pada modul tingkat rendah. Keduanya harus bergantung pada abstraksi.</strong></td>
+          <td>Class seperti <code>UserService</code> tidak boleh langsung <code>new MySQLDatabase()</code>. Harus menerima <code>DatabaseInterface</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>2</strong></td>
+          <td><strong>Abstraksi tidak boleh bergantung pada detail. Detail harus bergantung pada abstraksi.</strong></td>
+          <td>Interface <code>DatabaseInterface</code> tidak boleh tahu apa-apa tentang MySQL, PostgreSQL, atau MongoDB. Justru implementasi konkret yang mengikuti interface.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box box-warning">
+    <strong>Kesalahan Umum</strong>
+    Banyak yang mengira "pakai interface" sudah cukup. Tapi kalau interface-nya
+    sendiri <em>bocor</em> (misal ada method <code>getMysqlConnection()</code>),
+    itu tetap melanggar DIP. Interface harus <strong>bersih dari detail teknis</strong>.
+  </div>
+
+  <!-- ================= 3. KENAPA ================= -->
+  <h2 id="kenapa">3. Kenapa DIP Penting?</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th style="width:30%;">Aspek</th><th>Tanpa DIP</th><th>Dengan DIP</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Ganti database</strong></td>
+          <td>Edit <code>UserService</code>, tes ulang semua</td>
+          <td>Cukup buat implementasi interface baru</td>
+        </tr>
+        <tr>
+          <td><strong>Unit testing</strong></td>
+          <td>Butuh database sungguhan, mail server sungguhan</td>
+          <td>Cukup <em>mock</em> / <em>in-memory</em></td>
+        </tr>
+        <tr>
+          <td><strong>Kode klien</strong></td>
+          <td>Bergantung pada semua detail teknis</td>
+          <td>Hanya bergantung pada abstraksi</td>
+        </tr>
+        <tr>
+          <td><strong>Reuse</strong></td>
+          <td>Sulit — class terkunci ke MySQL</td>
+          <td>Mudah — class bisa dipakai dengan database apa saja</td>
+        </tr>
+        <tr>
+          <td><strong>Kolaborasi tim</strong></td>
+          <td>Tim bisnis &amp; tim DBA saling mengunci</td>
+          <td>Bisa kerja paralel lewat interface</td>
+        </tr>
+        <tr>
+          <td><strong>Refactor</strong></td>
+          <td>Berisiko tinggi</td>
+          <td>Aman, terisolasi</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box box-success">
+    <strong>Manfaat Utama</strong>
+    DIP membuat kode <strong>fleksibel</strong> (mudah diganti), <strong>testable</strong>
+    (mudah diuji), dan <strong>maintainable</strong> (mudah dirawat).
+    <br><br>
+    Inilah prinsip yang memungkinkan framework modern seperti <strong>Laravel</strong>
+    punya <em>service container</em> yang otomatis menyuntikkan dependensi.
+  </div>
+
+  <!-- ================= 4. GEJALA ================= -->
+  <h2 id="gejala">4. Gejala-Gejala Pelanggaran DIP</h2>
+
+  <p>Kenali tanda-tanda berikut di kode Anda:</p>
+
+  <ul>
+    <li>Class berisi <code>new MySQLDatabase()</code>, <code>new PHPMailer()</code>, atau <code>new FileLogger()</code> di dalam method.</li>
+    <li>Class meng-<em>import</em> class konkret dari library eksternal (<code>use PHPMailer\PHPMailer\PHPMailer</code>).</li>
+    <li>Ada <code>new</code> untuk class "berat" (database, API client, filesystem) di dalam constructor atau method.</li>
+    <li>Kode klien tahu terlalu banyak detail teknis (misal harus kirim host, user, password database).</li>
+    <li>Tidak bisa di-unit-test tanpa menyiapkan database / mail server / file system sungguhan.</li>
+    <li>Interface bocor — misal <code>getMysqlConnection()</code> atau <code>getPdoHandle()</code>.</li>
+    <li>Ada <em>static call</em> seperti <code>Database::connect()</code> atau <code>Mail::send()</code> di dalam class bisnis.</li>
+  </ul>
+
+  <div class="box box-warning">
+    <strong>Aturan Cepat</strong>
+    Kalau sebuah class "tahu" terlalu banyak tentang bagaimana dependensinya
+    dibuat (host, port, password, library apa), itu tanda DIP dilanggar.
+    <br><br>
+    Solusinya: <strong>terima dependensi dari luar</strong> melalui constructor
+    (Dependency Injection), dengan tipe <strong>interface</strong>.
+  </div>
+
+  <!-- ================= 5. KODE SALAH ================= -->
+  <h2 id="kode-salah">5. Kode yang Melanggar DIP (Studi Kasus UserService)</h2>
+
+  <p>
+    Kita mulai dengan contoh klasik: <strong><code>UserService</code></strong>
+    yang menyimpan user ke database. Perhatikan bagaimana class ini
+    <em>langsung</em> bergantung pada <code>MySQLDatabase</code>.
+  </p>
+
+  <h3>5.1 Kode SALAH — Bergantung pada Implementasi Konkret</h3>
+
+  <span class="code-label bad">❌ SALAH — Dependensi Konkret Langsung</span>
+  <pre><code>&lt;?php
+// src/Services/UserService.php
+namespace App\Services;
+
+use App\Models\User;
+use PDO;
+use PHPMailer\PHPMailer\PHPMailer;
+
+class UserService
+{
+    private PDO $pdo;
+
+    public function __construct()
+    {
+        // ⚠️ Hardcode dependensi di dalam class
+        $this->pdo = new PDO(
+            'mysql:host=localhost;dbname=toko',
+            'root',
+            'rahasia'
+        );
+    }
+
+    public function createUser(string $name, string $email): User
+    {
+        $user = new User($name, $email);
+
+        // ⚠️ UserService tahu detail SQL
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO users (name, email) VALUES (?, ?)"
+        );
+        $stmt->execute([$name, $email]);
+
+        // ⚠️ UserService juga tahu detail PHPMailer
+        $mailer = new PHPMailer();
+        $mailer->isSMTP();
+        $mailer->Host = 'smtp.gmail.com';
+        $mailer->Username = 'noreply@example.com';
+        $mailer->Password = 'rahasia';
+        $mailer->setFrom('noreply@example.com', 'Toko');
+        $mailer->addAddress($email, $name);
+        $mailer->Subject = 'Selamat datang';
+        $mailer->Body = "Halo $name, akun Anda sudah aktif.";
+        $mailer->send();
+
+        return $user;
+    }
+}</code></pre>
+
+  <h3>5.2 Kode Klien yang "Tahu Segalanya"</h3>
+
+  <span class="code-label bad">❌ SALAH — Klien Tidak Tahu Apa yang Terjadi</span>
+  <pre><code>&lt;?php
+// index.php
+require_once __DIR__ . '/vendor/autoload.php';
+
+use App\Services\UserService;
+
+// ⚠️ Klien hanya tahu "new UserService()" — tidak tahu bahwa:
+// - Service ini butuh MySQL
+// - Service ini butuh SMTP Gmail
+// - Service ini akan gagal kalau salah satu tidak tersedia
+$service = new UserService();
+
+$user = $service->createUser('Budi', 'budi@example.com');
+echo "User dibuat: " . $user->getName();</code></pre>
+
+  <div class="box box-danger">
+    <strong>Masalah Utama</strong>
+    <ul style="margin: 6px 0 0;">
+      <li><code>UserService</code> <strong>memilih sendiri</strong> database apa yang dipakai.</li>
+      <li><code>UserService</code> <strong>memilih sendiri</strong> cara kirim email (PHPMailer, SMTP Gmail).</li>
+      <li>Password database dan SMTP <strong>tertanam</strong> di dalam class (bahaya keamanan!).</li>
+      <li>Tidak bisa diganti ke PostgreSQL tanpa edit <code>UserService</code>.</li>
+      <li>Tidak bisa di-unit-test tanpa MySQL dan Gmail sungguhan.</li>
+      <li>Melanggar DIP: <strong>class tingkat tinggi bergantung langsung pada class tingkat rendah</strong>.</li>
+    </ul>
+  </div>
+
+  <!-- ================= 6. MASALAH ================= -->
+  <h2 id="masalah">6. Analisis Masalah pada Kode Tersebut</h2>
+
+  <p>Mari kita bedah: apa yang sebenarnya salah?</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>No</th><th>Masalah</th><th>Penjelasan</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Arah dependensi salah</td>
+          <td><code>UserService</code> (tinggi) → <code>PDO</code> (rendah). Seharusnya keduanya → interface.</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Dependensi konkret</td>
+          <td><code>new PDO()</code> dan <code>new PHPMailer()</code> langsung di dalam class.</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Konfigurasi bocor</td>
+          <td>Host, username, password database dan SMTP tertanam di class.</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Tidak bisa diganti</td>
+          <td>Ganti ke PostgreSQL = edit <code>UserService</code>.</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Tidak bisa di-test</td>
+          <td>Unit test butuh MySQL dan Gmail sungguhan.</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Melanggar DIP</td>
+          <td>Modul tingkat tinggi bergantung pada modul tingkat rendah.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>6.1 Ilustrasi Arah Dependensi yang Salah</h3>
+
+  <div class="flow">❌ TANPA DIP — Arah Dependensi Salah
+
+   UserService  (tinggi)
+        │
+        │  bergantung langsung
+        ▼
+   MySQLDatabase  (rendah)
+        │
+        ▼
+      PDO
+
+   ⚠️ Kalau MySQLDatabase berubah,
+   UserService harus ikut diubah.</div>
+
+  <div class="flow">✅ DENGAN DIP — Arah Dependensi Dibalik
+
+   UserService  (tinggi)
+        │
+        │  bergantung pada
+        ▼
+   DatabaseInterface  ◄──── MySQLDatabase (rendah)
+                      ◄──── PostgreSQLDatabase
+                      ◄──── InMemoryDatabase
+
+   ✅ UserService tidak tahu MySQL.
+   MySQLDatabase mengikuti interface.</div>
+
+  <h3>6.2 Dampak Nyata Pelanggaran Ini</h3>
+
+  <ul>
+    <li>
+      <strong>Vendor lock-in</strong> — begitu pakai MySQL, susah pindah ke
+      PostgreSQL atau MongoDB tanpa bongkar <code>UserService</code>.
+    </li>
+    <li>
+      <strong>Testing mustahil</strong> — setiap unit test harus siapkan
+      MySQL dan Gmail sungguhan. Test jadi lambat dan rapuh.
+    </li>
+    <li>
+      <strong>Keamanan terancam</strong> — password database dan SMTP
+      tertanam di kode, rawan bocor kalau repo di-<em>push</em> ke publik.
+    </li>
+    <li>
+      <strong>Kolaborasi terhambat</strong> — tim bisnis dan tim DBA
+      tidak bisa kerja paralel karena saling mengunci.
+    </li>
+    <li>
+      <strong>Tidak reusable</strong> — <code>UserService</code> tidak bisa
+      dipakai di project lain yang pakai database berbeda.
+    </li>
+  </ul>
+
+  <!-- ================= 7. KODE BENAR ================= -->
+  <h2 id="kode-benar">7. Refactor: Menerapkan DIP dengan Dependency Injection</h2>
+
+  <p>
+    Solusinya: <strong>balik arah ketergantungan</strong>. Buat interface
+    untuk setiap dependensi, lalu <strong>terima dependensi itu dari luar</strong>
+    melalui constructor. Inilah yang disebut <strong>Dependency Injection</strong>.
+  </p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Interface <code>DatabaseInterface</code> — Abstraksi Database</h4>
+      <p>
+        Kontrak minimal yang dibutuhkan <code>UserService</code>.
+        <strong>Bebas dari detail teknis</strong> — tidak boleh ada
+        <code>getMysqlConnection()</code> di sini.
+      </p>
+      <span class="code-label info">INTERFACE</span>
+      <pre><code>&lt;?php
+// src/Contracts/DatabaseInterface.php
+namespace App\Contracts;
+
+interface DatabaseInterface
+{
+    public function insert(string $table, array $data): bool;
+    public function find(string $table, int $id): ?array;
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Interface <code>MailerInterface</code> — Abstraksi Pengiriman Email</h4>
+      <p>
+        Kontrak minimal untuk kirim email. Bebas dari detail PHPMailer,
+        SMTP, atau API apa pun.
+      </p>
+      <span class="code-label info">INTERFACE</span>
+      <pre><code>&lt;?php
+// src/Contracts/MailerInterface.php
+namespace App\Contracts;
+
+interface MailerInterface
+{
+    public function send(string $to, string $subject, string $body): bool;
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Implementasi <code>MySQLDatabase</code> — Detail Teknis</h4>
+      <p>
+        Kelas konkret yang <strong>mengikuti interface</strong>. Di sini boleh
+        ada detail PDO, SQL, host, password — karena ini memang "dunia teknis".
+      </p>
+      <span class="code-label good">✅ Implementasi Interface</span>
+      <pre><code>&lt;?php
+// src/Database/MySQLDatabase.php
+namespace App\Database;
+
+use App\Contracts\DatabaseInterface;
+use PDO;
+
+class MySQLDatabase implements DatabaseInterface
+{
+    public function __construct(private PDO $pdo) {}
+
+    public function insert(string $table, array $data): bool
+    {
+        $columns = implode(', ', array_keys($data));
+        $placeholders = implode(', ', array_fill(0, count($data), '?'));
+
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO {$table} ({$columns}) VALUES ({$placeholders})"
+        );
+        return $stmt->execute(array_values($data));
+    }
+
+    public function find(string $table, int $id): ?array
+    {
+        $stmt = $this->pdo->prepare(
+            "SELECT * FROM {$table} WHERE id = ?"
+        );
+        $stmt->execute([$id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row === false ? null : $row;
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>Implementasi <code>InMemoryDatabase</code> — Untuk Testing</h4>
+      <p>
+        Implementasi palsu yang <strong>tidak butuh database sungguhan</strong>.
+        Inilah kekuatan DIP: <code>UserService</code> bisa diuji tanpa MySQL.
+      </p>
+      <span class="code-label good">✅ Implementasi Interface (Testing)</span>
+      <pre><code>&lt;?php
+// src/Database/InMemoryDatabase.php
+namespace App\Database;
+
+use App\Contracts\DatabaseInterface;
+
+class InMemoryDatabase implements DatabaseInterface
+{
+    private array $tables = [];
+
+    public function insert(string $table, array $data): bool
+    {
+        $this->tables[$table][] = $data;
+        return true;
+    }
+
+    public function find(string $table, int $id): ?array
+    {
+        return $this->tables[$table][$id - 1] ?? null;
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h4>Implementasi <code>SmtpMailer</code> — Detail Teknis Email</h4>
+      <p>
+        Di sini detail SMTP boleh muncul — karena ini implementasi konkret.
+      </p>
+      <span class="code-label good">✅ Implementasi Interface</span>
+      <pre><code>&lt;?php
+// src/Mail/SmtpMailer.php
+namespace App\Mail;
+
+use App\Contracts\MailerInterface;
+use PHPMailer\PHPMailer\PHPMailer;
+
+class SmtpMailer implements MailerInterface
+{
+    public function __construct(
+        private string $host,
+        private string $username,
+        private string $password
+    ) {}
+
+    public function send(string $to, string $subject, string $body): bool
+    {
+        $mailer = new PHPMailer();
+        $mailer->isSMTP();
+        $mailer->Host     = $this->host;
+        $mailer->Username = $this->username;
+        $mailer->Password = $this->password;
+        $mailer->setFrom($this->username, 'Toko');
+        $mailer->addAddress($to);
+        $mailer->Subject = $subject;
+        $mailer->Body    = $body;
+
+        return $mailer->send();
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">6</div>
+    <div class="step-body">
+      <h4>Class <code>UserService</code> — Sekarang Bersih</h4>
+      <p>
+        Perhatikan: <code>UserService</code> <strong>tidak tahu</strong> MySQL,
+        tidak tahu SMTP. Dia hanya tahu <strong>interface</strong>.
+        Dependensi diterima dari luar lewat constructor — inilah
+        <strong>Dependency Injection</strong>.
+      </p>
+      <span class="code-label good">✅ DIP Terpenuhi</span>
+      <pre><code>&lt;?php
+// src/Services/UserService.php
+namespace App\Services;
+
+use App\Contracts\DatabaseInterface;
+use App\Contracts\MailerInterface;
+use App\Models\User;
+
+class UserService
+{
+    public function __construct(
+        private DatabaseInterface $db,
+        private MailerInterface   $mailer
+    ) {}
+
+    public function createUser(string $name, string $email): User
+    {
+        $user = new User($name, $email);
+
+        $this->db->insert('users', [
+            'name'  => $name,
+            'email' => $email,
+        ]);
+
+        $this->mailer->send(
+            $email,
+            'Selamat datang',
+            "Halo {$name}, akun Anda sudah aktif."
+        );
+
+        return $user;
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">7</div>
+    <div class="step-body">
+      <h4>Kode Klien — Rangkai dari Luar</h4>
+      <p>
+        Klien (biasanya <code>index.php</code> atau file konfigurasi framework)
+        yang bertugas <strong>merangkai</strong> dependensi. Inilah yang
+        disebut <strong>Composition Root</strong>.
+      </p>
+      <span class="code-label file">index.php — Produksi</span>
+      <pre><code>&lt;?php
+require_once __DIR__ . '/vendor/autoload.php';
+
+use App\Contracts\DatabaseInterface;
+use App\Contracts\MailerInterface;
+use App\Database\MySQLDatabase;
+use App\Mail\SmtpMailer;
+use App\Services\UserService;
+
+// ============ PRODUKSI ============
+$pdo        = new PDO('mysql:host=localhost;dbname=toko', 'root', 'rahasia');
+$db         = new MySQLDatabase($pdo);
+$mailer     = new SmtpMailer('smtp.gmail.com', 'noreply@example.com', 'rahasia');
+$service    = new UserService($db, $mailer);
+
+$user = $service->createUser('Budi', 'budi@example.com');
+echo "User dibuat: " . $user->getName();</code></pre>
+
+      <span class="code-label file">test.php — Testing (Tanpa Database &amp; SMTP)</span>
+      <pre><code>&lt;?php
+require_once __DIR__ . '/vendor/autoload.php';
+
+use App\Database\InMemoryDatabase;
+use App\Mail\FakeMailer;
+use App\Services\UserService;
+
+// ============ TESTING ============
+$db      = new InMemoryDatabase();
+$mailer  = new FakeMailer();  // tidak kirim email sungguhan
+$service = new UserService($db, $mailer);
+
+$user = $service->createUser('Budi', 'budi@example.com');
+
+// Assert: user berhasil dibuat tanpa MySQL & Gmail
+assert($user->getName() === 'Budi');
+assert($mailer->wasSentTo('budi@example.com'));
+
+echo "✅ Semua test lulus!";</code></pre>
+    </div>
+  </div>
+
+  <div class="box box-success">
+    <strong>Hasil Refactor</strong>
+    Sekarang:
+    <ul style="margin: 6px 0 0;">
+      <li><code>UserService</code> <strong>tidak tahu</strong> MySQL — hanya tahu <code>DatabaseInterface</code>.</li>
+      <li><code>UserService</code> <strong>tidak tahu</strong> SMTP — hanya tahu <code>MailerInterface</code>.</li>
+      <li>Ganti database? Cukup buat implementasi interface baru.</li>
+      <li>Testing? Cukup pakai <code>InMemoryDatabase</code> dan <code>FakeMailer</code>.</li>
+      <li>Password tidak lagi tertanam di class bisnis — pindah ke file konfigurasi.</li>
+    </ul>
+  </div>
+
+  <!-- ================= 8. KONSEP OOP ================= -->
+  <h2 id="konsep-oop">8. Penggunaan Class, Interface, Abstract, dan Polimorfisme</h2>
+
+  <p>
+    Refactor DIP di atas memanfaatkan konsep OOP secara tepat. Berikut
+    ringkasan penggunaan masing-masing konsep:
+  </p>
+
+  <div class="concept-cards">
+    <div class="concept-card">
+      <span class="tag tag-class">CLASS</span>
+      <h5>Class Biasa</h5>
+      <p>
+        <code>MySQLDatabase</code>, <code>InMemoryDatabase</code>,
+        <code>SmtpMailer</code>, <code>FakeMailer</code>, <code>UserService</code>.
+        <br><br>
+        Class konkret yang bisa diinstansiasi — tapi <strong>tidak saling
+        mengenal langsung</strong>; mereka bertemu di interface.
+      </p>
+    </div>
+
+    <div class="concept-card">
+      <span class="tag tag-interface">INTERFACE</span>
+      <h5>Interface (Inti DIP)</h5>
+      <p>
+        <code>DatabaseInterface</code> dan <code>MailerInterface</code> —
+        kontrak abstrak yang menjadi <strong>titik temu</strong> antara
+        class tingkat tinggi dan tingkat rendah.
+        <br><br>
+        Inilah <strong>"colokan standar"</strong> yang membuat DIP bekerja.
+      </p>
+    </div>
+
+    <div class="concept-card">
+      <span class="tag tag-abstract">ABSTRACT CLASS</span>
+      <h5>Abstract Class</h5>
+      <p>
+        Pada contoh ini <strong>tidak digunakan</strong> karena tidak ada
+        <em>logic bersama</em> yang perlu diwarisi. Interface sudah cukup.
+        <br><br>
+        (Akan dibahas di bagian 8.1 kapan abstract class tepat dipakai
+        dalam konteks DIP.)
+      </p>
+    </div>
+
+    <div class="concept-card">
+      <span class="tag tag-poly">POLIMORFISME</span>
+      <h5>Polimorfisme</h5>
+      <p>
+        <code>UserService</code> memanggil <code>$this->db->insert()</code> —
+        entah itu <code>MySQLDatabase</code>, <code>PostgreSQLDatabase</code>,
+        atau <code>InMemoryDatabase</code>, pemanggilan tetap sama.
+        <br><br>
+        Inilah polimorfisme yang menjadi <strong>fondasi DIP</strong>.
+      </p>
+    </div>
+  </div>
+
+  <h3>8.1 Kapan Abstract Class Dipakai dalam Konteks DIP?</h3>
+
+  <p>
+    Abstract class <strong>juga bisa dipakai</strong> sebagai abstraksi
+    dependensi, asalkan tetap bersih dari detail teknis. Contoh: kita ingin
+    semua <em>logger</em> punya method <code>log()</code> dengan
+    <em>format konsisten</em>.
+  </p>
+
+  <span class="code-label info">ABSTRACT CLASS — Kontrak + Logic Bersama</span>
+  <pre><code>&lt;?php
+// src/Abstracts/AbstractLogger.php
+namespace App\Abstracts;
+
+abstract class AbstractLogger
+{
+    // Method abstrak — WAJIB diimplementasi turunan
+    abstract protected function write(string $formatted): void;
+
+    // Method konkret — bisa dipakai semua turunan
+    public function log(string $level, string $message): void
+    {
+        $formatted = sprintf(
+            "[%s] %s: %s",
+            date('Y-m-d H:i:s'),
+            strtoupper($level),
+            $message
+        );
+        $this->write($formatted);
+    }
+}</code></pre>
+
+  <span class="code-label good">✅ Implementasi Konkret 1 — File</span>
+  <pre><code>&lt;?php
+// src/Loggers/FileLogger.php
+namespace App\Loggers;
+
+use App\Abstracts\AbstractLogger;
+
+class FileLogger extends AbstractLogger
+{
+    public function __construct(private string $logFile) {}
+
+    protected function write(string $formatted): void
+    {
+        file_put_contents($this->logFile, $formatted . PHP_EOL, FILE_APPEND);
+    }
+}</code></pre>
+
+  <span class="code-label good">✅ Implementasi Konkret 2 — Database</span>
+  <pre><code>&lt;?php
+// src/Loggers/DatabaseLogger.php
+namespace App\Loggers;
+
+use App\Abstracts\AbstractLogger;
+use App\Contracts\DatabaseInterface;
+
+class DatabaseLogger extends AbstractLogger
+{
+    public function __construct(private DatabaseInterface $db) {}
+
+    protected function write(string $formatted): void
+    {
+        $this->db->insert('logs', ['message' => $formatted]);
+    }
+}</code></pre>
+
+  <p><strong>Class klien menerima abstract class:</strong></p>
+  <pre><code>&lt;?php
+// src/Services/OrderService.php
+namespace App\Services;
+
+use App\Abstracts\AbstractLogger;
+use App\Contracts\DatabaseInterface;
+
+class OrderService
+{
+    public function __construct(
+        private DatabaseInterface $db,
+        private AbstractLogger    $logger
+    ) {}
+
+    public function createOrder(array $data): void
+    {
+        $this->db->insert('orders', $data);
+        $this->logger->log('info', 'Order dibuat');
+    }
+}</code></pre>
+
+  <div class="box box-success">
+    <strong>Pola Kombinasi Interface + Abstract Class untuk DIP</strong>
+    <ul style="margin: 6px 0 0;">
+      <li><strong>Interface <code>DatabaseInterface</code></strong> — kontrak murni, bebas detail teknis.</li>
+      <li><strong>Abstract class <code>AbstractLogger</code></strong> — kontrak + logic bersama (format pesan).</li>
+      <li><strong>Class konkret</strong> — implementasi detail (PDO, file, dll.).</li>
+    </ul>
+    Ini pola standar di framework modern. <em>Selama interface/abstract class
+    tidak bocor detail teknis</em>, DIP tetap terpenuhi.
+  </div>
+
+  <!-- ================= 9. BANDING ================= -->
+  <h2 id="banding">9. Perbandingan Sebelum vs Sesudah</h2>
+
+  <div class="compare">
+    <div class="bad-box">
+      <div class="compare-header">❌ SEBELUM (Melanggar DIP)</div>
+      <ul>
+        <li><code>UserService</code> langsung <code>new PDO()</code></li>
+        <li><code>UserService</code> langsung <code>new PHPMailer()</code></li>
+        <li>Password tertanam di kode</li>
+        <li>Ganti database = edit <code>UserService</code></li>
+        <li>Tidak bisa di-unit-test</li>
+        <li>Kode klien buta — tidak tahu dependensi apa yang dibutuhkan</li>
+      </ul>
+    </div>
+    <div class="good-box">
+      <div class="compare-header">✅ SESUDAH (DIP Terpenuhi)</div>
+      <ul>
+        <li><code>UserService</code> menerima <code>DatabaseInterface</code></li>
+        <li><code>UserService</code> menerima <code>MailerInterface</code></li>
+        <li>Password dipindah ke file konfigurasi</li>
+        <li>Ganti database = buat implementasi baru</li>
+        <li>Bisa di-unit-test dengan <code>InMemoryDatabase</code></li>
+        <li>Kode klien eksplisit — jelas dependensi apa yang dibutuhkan</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Aspek</th><th>❌ Sebelum DIP</th><th>✅ Sesudah DIP</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Arah dependensi</strong></td>
+          <td>Service → MySQL (langsung)</td>
+          <td>Service → Interface ← MySQL</td>
+        </tr>
+        <tr>
+          <td><strong>Pembuatan dependensi</strong></td>
+          <td>Di dalam class (<code>new</code>)</td>
+          <td>Di luar class (constructor injection)</td>
+        </tr>
+        <tr>
+          <td><strong>Ganti database</strong></td>
+          <td>Edit <code>UserService</code></td>
+          <td>Buat implementasi interface baru</td>
+        </tr>
+        <tr>
+          <td><strong>Testing</strong></td>
+          <td>Butuh MySQL + Gmail sungguhan</td>
+          <td>Cukup <code>InMemoryDatabase</code> + <code>FakeMailer</code></td>
+        </tr>
+        <tr>
+          <td><strong>Keamanan</strong></td>
+          <td>Password di class bisnis</td>
+          <td>Password di file konfigurasi</td>
+        </tr>
+        <tr>
+          <td><strong>Reuse</strong></td>
+          <td>Terkunci ke MySQL</td>
+          <td>Bisa dipakai dengan database apa saja</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ================= 10. ATURAN ================= -->
+  <h2 id="aturan">10. Aturan Praktis DIP</h2>
+
+  <p>Berikut aturan praktis yang bisa Anda hafal untuk menerapkan DIP:</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th style="width:35%;">Aturan</th><th>Penjelasan</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Jangan <code>new</code> dependensi di dalam class</strong></td>
+          <td>Terima dari luar lewat constructor (Dependency Injection).</td>
+        </tr>
+        <tr>
+          <td><strong>Type-hint dengan interface</strong></td>
+          <td>Constructor menerima <code>DatabaseInterface</code>, bukan <code>MySQLDatabase</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>Interface harus "bersih"</strong></td>
+          <td>Jangan ada <code>getMysqlConnection()</code> — itu detail teknis.</td>
+        </tr>
+        <tr>
+          <td><strong>Composition Root</strong></td>
+          <td>Rangkai semua dependensi di satu tempat (misal <code>index.php</code> atau file container).</td>
+        </tr>
+        <tr>
+          <td><strong>Konfigurasi bukan kode</strong></td>
+          <td>Password, host, port disimpan di <code>.env</code> atau file config, bukan di class.</td>
+        </tr>
+        <tr>
+          <td><strong>Gunakan service container</strong></td>
+          <td>Di framework modern (Laravel, Symfony), container otomatis melakukan DI berdasarkan type-hint constructor.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box box-warning">
+    <strong>Aturan Emas</strong>
+    Saat menulis class, tanyakan:
+    <br><br>
+    <em>"Apakah class ini <strong>tahu terlalu banyak</strong> tentang
+    bagaimana dependensinya dibuat?"</em>
+    <br><br>
+    Kalau <strong>ya</strong>, berarti DIP dilanggar. Pindahkan pembuatan
+    dependensi ke luar class.
+  </div>
+
+  <!-- ================= 11. STRUKTUR ================= -->
+  <h2 id="struktur">11. Struktur Folder Final</h2>
+
+  <div class="tree">
+php-dip/
+├── <span class="file">composer.json</span>
+├── <span class="file">index.php</span>
+├── <span class="file">test.php</span>
+└── <span class="folder">src/</span>
+    ├── <span class="folder">Contracts/</span>
+    │   ├── <span class="file">DatabaseInterface.php</span>   <span style="color:#64748b">(interface)</span>
+    │   └── <span class="file">MailerInterface.php</span>     <span style="color:#64748b">(interface)</span>
+    ├── <span class="folder">Database/</span>
+    │   ├── <span class="file">MySQLDatabase.php</span>       <span style="color:#64748b">(implementasi)</span>
+    │   └── <span class="file">InMemoryDatabase.php</span>    <span style="color:#64748b">(implementasi testing)</span>
+    ├── <span class="folder">Mail/</span>
+    │   ├── <span class="file">SmtpMailer.php</span>          <span style="color:#64748b">(implementasi)</span>
+    │   └── <span class="file">FakeMailer.php</span>          <span style="color:#64748b">(implementasi testing)</span>
+    ├── <span class="folder">Abstracts/</span>
+    │   └── <span class="file">AbstractLogger.php</span>      <span style="color:#64748b">(abstract, opsional)</span>
+    ├── <span class="folder">Loggers/</span>
+    │   ├── <span class="file">FileLogger.php</span>
+    │   └── <span class="file">DatabaseLogger.php</span>
+    ├── <span class="folder">Models/</span>
+    │   └── <span class="file">User.php</span>
+    └── <span class="folder">Services/</span>
+        └── <span class="file">UserService.php</span>         <span style="color:#64748b">(tinggi — bebas detail)</span>
+  </div>
+
+  <p><strong>Contoh <code>composer.json</code>:</strong></p>
+  <pre><code>{
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}</code></pre>
+
+  <p>Setelah semua file dibuat, jalankan:</p>
+  <pre><code>composer dump-autoload -o
+php index.php
+php test.php</code></pre>
+
+  <!-- ================= 12. KAITAN ================= -->
+  <h2 id="kaitan">12. Kaitan dengan Prinsip SOLID Lain</h2>
+
+  <p>
+    DIP adalah prinsip <strong>puncak</strong> dari SOLID — ia mengikat
+    semua prinsip sebelumnya menjadi satu kesatuan utuh:
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th style="width:25%;">Prinsip</th><th>Kaitan dengan DIP</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>S — Single Responsibility</strong></td>
+          <td>DIP mendorong SRP: Service hanya urus logika bisnis, tidak urus cara koneksi database.</td>
+        </tr>
+        <tr>
+          <td><strong>O — Open/Closed</strong></td>
+          <td>DIP memungkinkan OCP: menambah database baru = tambah class implementasi, tanpa ubah Service.</td>
+        </tr>
+        <tr>
+          <td><strong>L — Liskov Substitution</strong></td>
+          <td>DIP <strong>membutuhkan</strong> LSP: implementasi interface harus bisa saling menggantikan tanpa error.</td>
+        </tr>
+        <tr>
+          <td><strong>I — Interface Segregation</strong></td>
+          <td>DIP membutuhkan ISP: interface harus kecil dan spesifik, supaya Service tidak dipaksa depend pada method yang tidak dipakai.</td>
+        </tr>
+        <tr>
+          <td><strong>D — Dependency Inversion</strong></td>
+          <td><strong>Puncak</strong> — menyatukan semua prinsip menjadi pola "bergantung pada abstraksi".</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box box-info">
+    <strong>DIP dan Framework Modern</strong>
+    DIP adalah prinsip yang paling <strong>terlihat efeknya</strong> di framework:
+    <ul style="margin: 6px 0 0;">
+      <li><strong>Laravel</strong> — <em>service container</em> otomatis melakukan DI berdasarkan type-hint.</li>
+      <li><strong>Symfony</strong> — <em>dependency injection container</em> dengan konfigurasi YAML/XML.</li>
+      <li><strong>Slim</strong> — <em>PHP-DI</em> untuk container.</li>
+    </ul>
+    Tanpa DIP, framework tidak mungkin "menyuntikkan" dependensi secara otomatis.
+  </div>
+
+  <!-- ================= 13. LATIHAN ================= -->
+  <h2 id="latihan">13. Latihan &amp; Tugas</h2>
+
+  <div class="exercise">
+    <h4>Latihan 1 — Identifikasi Pelanggaran DIP</h4>
+    <p>Perhatikan class berikut, lalu jawab pertanyaan:</p>
+    <pre><code>&lt;?php
+class OrderService
+{
+    public function process(array $order): void
+    {
+        // Kirim email langsung
+        $mailer = new \PHPMailer\PHPMailer\PHPMailer();
+        $mailer->isSMTP();
+        $mailer->Host = 'smtp.gmail.com';
+        $mailer->Username = 'noreply@example.com';
+        $mailer->Password = 'rahasia';
+        $mailer->addAddress($order['email']);
+        $mailer->Subject = 'Order dikonfirmasi';
+        $mailer->Body = 'Terima kasih!';
+        $mailer->send();
+
+        // Simpan log langsung
+        file_put_contents('/var/log/order.log', date('Y-m-d') . " order diproses\n", FILE_APPEND);
+    }
+}</code></pre>
+    <ol>
+      <li>Sebutkan minimal <strong>3 pelanggaran DIP</strong> di sini.</li>
+      <li>Mengapa password SMTP tertanam di class berbahaya?</li>
+      <li>Bagaimana Anda akan menguji class ini tanpa Gmail?</li>
+    </ol>
+  </div>
+
+  <div class="exercise">
+    <h4>Latihan 2 — Refactor dengan Interface + DI</h4>
+    <p>Refactor <code>OrderService</code> di atas agar menerapkan DIP. Wajib menyertakan:</p>
+    <ul>
+      <li>Interface <code>MailerInterface</code> dengan method <code>send()</code>.</li>
+      <li>Interface <code>LoggerInterface</code> dengan method <code>log()</code>.</li>
+      <li>Implementasi <code>SmtpMailer</code> dan <code>FileLogger</code>.</li>
+      <li>Implementasi <code>FakeMailer</code> dan <code>InMemoryLogger</code> untuk testing.</li>
+      <li>Class <code>OrderService</code> yang menerima kedua interface di constructor.</li>
+      <li>File <code>index.php</code> (produksi) dan <code>test.php</code> (testing).</li>
+    </ul>
+    <p><strong>Target:</strong> <code>OrderService</code> bisa diuji tanpa Gmail dan tanpa filesystem sungguhan.</p>
+  </div>
+
+  <div class="exercise">
+    <h4>Latihan 3 — Service Container Sederhana</h4>
+    <p>
+      Buat class <code>Container</code> yang bisa:
+    </p>
+    <ol>
+      <li>Mendaftarkan binding: <code>$container-&gt;bind(DatabaseInterface::class, MySQLDatabase::class);</code></li>
+      <li>Me-<em>resolve</em> dependensi otomatis berdasarkan type-hint constructor.</li>
+      <li>Melempar exception jika binding tidak ditemukan.</li>
+    </ol>
+    <p>
+      <strong>Petunjuk:</strong> gunakan <code>ReflectionClass</code> untuk
+      membaca parameter constructor, lalu resolve satu per satu.
+      Ini adalah miniatur <em>service container</em> Laravel.
+    </p>
+  </div>
+
+  <div class="exercise">
+    <h4>Latihan 4 — Bandingkan 3 Pendekatan</h4>
+    <p>Buat implementasi <strong>yang sama</strong> (misal <code>UserService</code>) dengan 3 pendekatan:</p>
+    <ol>
+      <li><strong>Tanpa DIP</strong> — hardcode <code>new PDO()</code> di dalam class.</li>
+      <li><strong>DIP dengan interface saja</strong> — constructor menerima <code>DatabaseInterface</code>.</li>
+      <li><strong>DIP + abstract class</strong> — constructor menerima <code>AbstractDatabase</code> (dengan logic bersama).</li>
+    </ol>
+    <p>Untuk setiap pendekatan, tulis:</p>
+    <ul>
+      <li>Kelebihan dan kekurangan.</li>
+      <li>Bagaimana unit-testing masing-masing.</li>
+      <li>Kesimpulan: mana yang akan Anda pilih untuk production, dan mengapa?</li>
+    </ul>
+  </div>
+
+  <div class="exercise">
+    <h4>Tugas Akhir — Audit DIP pada Project Sebelumnya</h4>
+    <p>
+      Ambil salah satu project PHP Anda yang punya class dengan
+      <code>new Something()</code> di dalamnya. Lakukan audit DIP:
+    </p>
+    <ol>
+      <li>Identifikasi setiap dependensi konkret yang dibuat <em>di dalam</em> class.</li>
+      <li>Untuk setiap dependensi, tentukan:
+        <ul>
+          <li>Apakah layak dibuat interface?</li>
+          <li>Apa dampaknya jika diganti?</li>
+          <li>Bagaimana cara testing-nya?</li>
+        </ul>
+      </li>
+      <li>Refactor dengan menambahkan interface + Dependency Injection.</li>
+      <li>Buat class diagram <em>sebelum</em> dan <em>sesudah</em>.</li>
+      <li>Kumpulkan laporan PDF + ZIP project.</li>
+    </ol>
+    <p>
+      <strong>Nama file:</strong> <code>PBO_DIP_NamaAnda_NIM.zip</code>
+    </p>
+  </div>
+
+  <!-- ================= 14. REFERENSI ================= -->
+  <h2 id="referensi">14. Referensi</h2>
+  <ul>
+    <li>Martin, Robert C. — <em>Clean Architecture: A Craftsman's Guide to Software Structure and Design</em>. Prentice Hall, 2017. (Bab 11: DIP)</li>
+    <li>Martin, Robert C. — <em>Agile Software Development, Principles, Patterns, and Practices</em>. Prentice Hall, 2002.</li>
+    <li>Martin, Robert C. — <em>The Dependency Inversion Principle</em> (artikel asli): <em>https://web.archive.org/web/20150222001234/http://www.objectmentor.com/resources/articles/dip.pdf</em></li>
+    <li>Refactoring Guru — <em>Dependency Inversion Principle</em>: <em>https://refactoring.guru/design-patterns/solid</em></li>
+    <li>PHP-FIG PSR-11 — <em>Container Interface</em>: <em>https://www.php-fig.org/psr/psr-11/</em></li>
+    <li>PHP The Right Way — <em>Dependency Injection</em>: <em>https://phptherightway.com/#dependency_injection</em></li>
+  </ul>
+
+  <!-- ================= FOOTER ================= -->
+  <footer>
+    <p><strong>Modul Praktikum Pemrograman Berbasis Objek — Dependency Inversion Principle</strong></p>
+    <p>Bagian dari Modul SOLID · Disusun untuk Pembelajaran OOP Praktis</p>
+    <p style="font-size: 0.85em;">Dicetak dari browser via <em>Print → Save as PDF</em></p>
+
+    <div class="signature">
+      <p>Dosen Pengampu,</p>
+      <br><br>
+      <p class="name">Syahru Rahmayuda</p>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

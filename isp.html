@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul ISP — Interface Segregation Principle | Praktikum PBO</title>
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-dark: #3730a3;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --code-bg: #0f172a;
+    --code-text: #e2e8f0;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --isp: #8b5cf6;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+
+  .container {
+    max-width: 950px;
+    margin: 0 auto;
+    padding: 40px 30px 80px;
+    background: var(--card);
+    box-shadow: 0 0 30px rgba(0,0,0,0.05);
+    min-height: 100vh;
+  }
+
+  /* ============ COVER ============ */
+  .cover {
+    text-align: center;
+    padding: 50px 20px 40px;
+    border-bottom: 3px solid var(--primary);
+    margin-bottom: 40px;
+  }
+  .cover .institution {
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--primary-dark);
+    letter-spacing: 1.5px;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+  }
+  .cover h1 {
+    font-size: 2.2em;
+    color: var(--primary-dark);
+    margin: 15px 0 8px;
+    line-height: 1.2;
+  }
+  .cover .isp-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    background: var(--isp);
+    color: #fff;
+    font-size: 2.5em;
+    font-weight: 800;
+    border-radius: 50%;
+    margin: 15px 0;
+    box-shadow: 0 4px 15px rgba(139,92,246,0.35);
+  }
+  .cover .subtitle {
+    font-size: 1.05em;
+    color: var(--muted);
+    margin: 15px 0 25px;
+    font-style: italic;
+    max-width: 620px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .cover .info-card {
+    background: linear-gradient(135deg, #f1f5f9 0%, #ede9fe 100%);
+    display: inline-block;
+    padding: 20px 35px;
+    border-radius: 12px;
+    margin-top: 20px;
+    text-align: left;
+    border: 2px solid var(--border);
+    min-width: 300px;
+    max-width: 100%;
+  }
+  .cover .info-card p {
+    margin: 6px 0;
+    font-size: 0.95em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .cover .info-card .label {
+    color: var(--muted);
+    min-width: 130px;
+  }
+  .cover .info-card .value {
+    font-weight: 700;
+    color: var(--primary-dark);
+    flex: 1;
+  }
+  .cover .badge {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    padding: 8px 22px;
+    border-radius: 20px;
+    font-size: 0.88em;
+    letter-spacing: 0.5px;
+    margin-top: 20px;
+  }
+
+  /* ============ HEADINGS ============ */
+  h2 {
+    font-size: 1.5em;
+    color: var(--primary-dark);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 8px;
+    margin-top: 45px;
+    page-break-after: avoid;
+  }
+
+  h3 {
+    font-size: 1.2em;
+    color: var(--text);
+    margin-top: 30px;
+    page-break-after: avoid;
+  }
+
+  h4 {
+    font-size: 1.05em;
+    color: var(--primary);
+    margin-top: 22px;
+    page-break-after: avoid;
+  }
+
+  p { margin: 12px 0; }
+
+  /* ============ TOC ============ */
+  .toc {
+    background: #f1f5f9;
+    border-left: 4px solid var(--primary);
+    padding: 20px 25px;
+    border-radius: 6px;
+    margin: 30px 0;
+  }
+  .toc h3 { margin-top: 0; color: var(--primary-dark); }
+  .toc ol { margin: 0; padding-left: 20px; }
+  .toc li { margin: 6px 0; }
+  .toc a { color: var(--text); text-decoration: none; }
+  .toc a:hover { color: var(--primary); }
+
+  /* ============ CODE ============ */
+  pre {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 18px 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.83em;
+    line-height: 1.55;
+    margin: 15px 0;
+    page-break-inside: avoid;
+    border: 1px solid #1e293b;
+    -webkit-overflow-scrolling: touch;
+  }
+  code {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.88em;
+    color: #be123c;
+    word-break: break-word;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  /* ============ CODE LABEL ============ */
+  .code-label {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 6px 6px 0 0;
+    font-size: 0.8em;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: -4px;
+  }
+  .code-label.bad   { background: var(--danger); }
+  .code-label.good  { background: var(--success); }
+  .code-label.file  { background: var(--primary); }
+  .code-label.info  { background: var(--muted); }
+  .code-label.warn  { background: var(--warning); }
+
+  /* ============ BOXES ============ */
+  .box {
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin: 18px 0;
+    page-break-inside: avoid;
+  }
+  .box-info    { background: #eff6ff; border-left: 4px solid #3b82f6; }
+  .box-warning { background: #fffbeb; border-left: 4px solid var(--warning); }
+  .box-success { background: #ecfdf5; border-left: 4px solid var(--success); }
+  .box-danger  { background: #fef2f2; border-left: 4px solid var(--danger); }
+  .box strong  { display: block; margin-bottom: 4px; }
+
+  /* ============ TABLE ============ */
+  .table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 18px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+    page-break-inside: avoid;
+    min-width: 500px;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #f1f5f9;
+    color: var(--primary-dark);
+    font-weight: 600;
+  }
+  tr:nth-child(even) td { background: #fafafa; }
+
+  /* ============ PRINCIPLE ============ */
+  .principle {
+    background: #fff;
+    border-radius: 10px;
+    padding: 25px;
+    margin: 25px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    border-top: 5px solid var(--isp);
+    page-break-inside: avoid;
+  }
+
+  /* ============ STEPS ============ */
+  .step {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+    page-break-inside: avoid;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.05em;
+  }
+  .step-body { flex: 1; min-width: 0; }
+  .step-body h4 { margin-top: 0; }
+
+  /* ============ CONCEPT CARDS ============ */
+  .concept-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+  }
+  .concept-card {
+    background: #f8fafc;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+    page-break-inside: avoid;
+  }
+  .concept-card h5 {
+    margin: 0 0 8px;
+    color: var(--primary-dark);
+    font-size: 1em;
+  }
+  .concept-card p {
+    margin: 0;
+    font-size: 0.88em;
+    color: var(--muted);
+  }
+  .concept-card .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 0.75em;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .tag-class     { background: #dbeafe; color: #1e40af; }
+  .tag-interface { background: #fce7f3; color: #9d174d; }
+  .tag-abstract  { background: #fef3c7; color: #92400e; }
+  .tag-poly      { background: #d1fae5; color: #065f46; }
+
+  /* ============ FLOW ============ */
+  .flow {
+    background: #f8fafc;
+    border: 1px dashed var(--border);
+    padding: 20px;
+    border-radius: 8px;
+    font-family: 'Consolas', monospace;
+    font-size: 0.85em;
+    line-height: 1.8;
+    color: var(--text);
+    page-break-inside: avoid;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* ============ COMPARE ============ */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 20px 0;
+  }
+  .compare > div {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .compare .bad-box  { border: 2px solid var(--danger); }
+  .compare .good-box { border: 2px solid var(--success); }
+  .compare .compare-header {
+    padding: 10px 15px;
+    font-weight: 700;
+    font-size: 0.9em;
+    color: #fff;
+  }
+  .compare .bad-box .compare-header  { background: var(--danger); }
+  .compare .good-box .compare-header { background: var(--success); }
+  .compare ul {
+    margin: 0;
+    padding: 15px 20px 15px 35px;
+    font-size: 0.9em;
+  }
+
+  /* ============ EXERCISE ============ */
+  .exercise {
+    background: #faf5ff;
+    border: 1px solid #d8b4fe;
+    border-left: 5px solid #9333ea;
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin: 20px 0;
+    page-break-inside: avoid;
+  }
+  .exercise h4 {
+    margin-top: 0;
+    color: #6b21a8;
+    font-size: 1.05em;
+  }
+  .exercise ol { padding-left: 22px; margin: 8px 0; }
+  .exercise li { margin: 6px 0; }
+
+  /* ============ ANALOGY ============ */
+  .analogy {
+    background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    border-left: 5px solid var(--isp);
+    page-break-inside: avoid;
+  }
+  .analogy h4 {
+    margin-top: 0;
+    color: #5b21b6;
+  }
+
+  /* ============ FOOTER ============ */
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 2px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.88em;
+  }
+  footer .signature {
+    margin-top: 20px;
+    text-align: right;
+    color: var(--text);
+    font-size: 0.95em;
+  }
+  footer .signature .name {
+    font-weight: 700;
+    color: var(--primary-dark);
+    font-size: 1.05em;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 768px) {
+    .container { padding: 25px 18px 50px; }
+    .cover h1 { font-size: 1.6em; }
+    .cover .isp-badge { width: 55px; height: 55px; font-size: 2em; }
+    h2 { font-size: 1.3em; }
+    h3 { font-size: 1.1em; }
+    pre { font-size: 0.75em; padding: 14px 12px; }
+    .cover .info-card { padding: 15px 20px; min-width: auto; }
+    .cover .info-card .label { min-width: auto; }
+    .step-num { width: 32px; height: 32px; font-size: 0.95em; }
+    .compare { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    body { font-size: 15px; }
+    .container { padding: 20px 12px 40px; }
+    .cover { padding: 30px 10px 25px; }
+    .cover h1 { font-size: 1.35em; }
+    .cover .isp-badge { width: 48px; height: 48px; font-size: 1.7em; }
+    .cover .subtitle { font-size: 0.92em; }
+    pre { font-size: 0.7em; padding: 12px 10px; }
+    h2 { font-size: 1.15em; padding-bottom: 6px; }
+    .principle { padding: 18px 14px; }
+    .box { padding: 12px 15px; }
+    .exercise { padding: 14px 16px; }
+  }
+
+  /* ============ PRINT ============ */
+  @media print {
+    body { background: #fff; font-size: 11pt; }
+    .container {
+      box-shadow: none;
+      max-width: 100%;
+      padding: 0;
+    }
+    pre {
+      background: #1e293b !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      font-size: 8.5pt;
+    }
+    .box, th, .principle, .exercise, .step-num, .code-label,
+    .concept-card, .cover .isp-badge, .compare-header, .analogy {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .cover { page-break-after: always; }
+    h2, h3 { page-break-after: avoid; }
+    pre, .box, .exercise, .principle, table { page-break-inside: avoid; }
+    a { color: var(--text); text-decoration: none; }
+    .compare { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ================= COVER ================= -->
+  <div class="cover">
+    <p class="institution">Modul Praktikum Pemrograman Berbasis Objek</p>
+
+    <div class="isp-badge">I</div>
+
+    <h1>Interface Segregation<br>Principle (ISP)</h1>
+    <p class="subtitle">
+      Prinsip keempat SOLID — "Jangan paksa class mengimplementasikan method yang tidak dipakainya"
+    </p>
+
+    <div class="info-card">
+      <p><span class="label">Mata Kuliah</span><span class="value">Praktikum Pemrograman Berbasis Objek</span></p>
+      <p><span class="label">Dosen Pengampu</span><span class="value">Syahru Rahmayuda</span></p>
+      <p><span class="label">Topik</span><span class="value">Interface Segregation Principle</span></p>
+    </div>
+
+    <br>
+    <span class="badge">Modul Khusus ISP</span>
+  </div>
+
+  <!-- ================= TOC ================= -->
+  <div class="toc">
+    <h3>Daftar Isi</h3>
+    <ol>
+      <li><a href="#apa">Apa Itu Interface Segregation Principle?</a></li>
+      <li><a href="#kenapa">Kenapa ISP Penting?</a></li>
+      <li><a href="#gejala">Gejala-Gejala Pelanggaran ISP</a></li>
+      <li><a href="#kode-salah">Kode yang Melanggar ISP (Studi Kasus Worker)</a></li>
+      <li><a href="#masalah">Analisis Masalah pada Kode Tersebut</a></li>
+      <li><a href="#kode-benar">Refactor: Menerapkan ISP</a></li>
+      <li><a href="#konsep-oop">Penggunaan Class, Interface, Abstract, dan Polimorfisme</a></li>
+      <li><a href="#banding">Perbandingan Sebelum vs Sesudah</a></li>
+      <li><a href="#aturan">Aturan Praktis ISP</a></li>
+      <li><a href="#struktur">Struktur Folder Final</a></li>
+      <li><a href="#kaitan">Kaitan dengan Prinsip SOLID Lain</a></li>
+      <li><a href="#latihan">Latihan &amp; Tugas</a></li>
+      <li><a href="#referensi">Referensi</a></li>
+    </ol>
+  </div>
+
+  <!-- ================= 1. APA ================= -->
+  <h2 id="apa">1. Apa Itu Interface Segregation Principle?</h2>
+
+  <div class="principle">
+    <p style="font-size: 1.1em; font-style: italic; color: var(--primary-dark); margin-bottom: 15px;">
+      "Jangan paksa class mengimplementasikan method yang
+      <strong>tidak dipakainya</strong>."
+    </p>
+    <p style="text-align: right; color: var(--muted); font-size: 0.9em; margin: 0;">
+      — Robert C. Martin (Uncle Bob)
+    </p>
+  </div>
+
+  <p>
+    <strong>ISP</strong> adalah prinsip keempat dari <strong>SOLID</strong>.
+    Intinya: lebih baik punya <strong>banyak interface kecil</strong> yang spesifik
+    daripada <strong>satu interface besar</strong> yang memaksa semua implementor
+    mengisi method kosong.
+  </p>
+
+  <p>
+    Dengan kata lain: <strong>segregate</strong> (pisahkan) interface sesuai
+    kebutuhan masing-masing class. Jangan membuat "interface serba bisa"
+    yang akhirnya membebani class dengan method yang tidak relevan.
+  </p>
+
+  <div class="box box-info">
+    <strong>Analogi Sehari-hari</strong>
+    Bayangkan Anda membeli <strong>pisau lipat serbaguna</strong> dengan 20 mata
+    pisau: buka kaleng, potong roti, buka botol, gunting kuku, obeng, dll.
+    <br><br>
+    Anda hanya butuh <em>satu</em> fungsi: membuka botol. Tapi karena pisau
+    lipat itu "serba bisa", Anda terpaksa membawa 20 mata pisau yang tidak
+    Anda butuhkan — berat, ribet, dan membingungkan.
+    <br><br>
+    <strong>ISP mengajarkan: gunakan alat yang spesifik sesuai kebutuhan.</strong>
+    Mau buka botol? Beli pembuka botol saja.
+  </div>
+
+  <h3>1.1 Definisi Formal (Sederhana)</h3>
+  <blockquote style="border-left: 4px solid var(--isp); padding: 10px 20px; background: #faf5ff; margin: 15px 0; font-style: italic;">
+    "Klien tidak boleh dipaksa bergantung pada method yang tidak digunakannya."
+  </blockquote>
+  <p>
+    Artinya: kalau sebuah class hanya butuh method <code>work()</code>,
+    jangan paksa class itu mengimplementasikan <code>eat()</code> dan
+    <code>sleep()</code> sekaligus. Pecah interface-nya.
+  </p>
+
+  <!-- ================= 2. KENAPA ================= -->
+  <h2 id="kenapa">2. Kenapa ISP Penting?</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th style="width:30%;">Aspek</th><th>Tanpa ISP</th><th>Dengan ISP</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Kode class</strong></td>
+          <td>Penuh method kosong (dummy)</td>
+          <td>Hanya method yang relevan</td>
+        </tr>
+        <tr>
+          <td><strong>Testing</strong></td>
+          <td>Sulit — harus setup method yang tidak dipakai</td>
+          <td>Mudah — fokus pada satu kontrak kecil</td>
+        </tr>
+        <tr>
+          <td><strong>Menambah implementor</strong></td>
+          <td>Berisiko — wajib implement semua method</td>
+          <td>Aman — cukup implement yang relevan</td>
+        </tr>
+        <tr>
+          <td><strong>Memahami kontrak</strong></td>
+          <td>Sulit — interface besar, tidak jelas tujuannya</td>
+          <td>Mudah — interface kecil dan spesifik</td>
+        </tr>
+        <tr>
+          <td><strong>Reuse</strong></td>
+          <td>Rendah — interface gemuk sulit dipakai ulang</td>
+          <td>Tinggi — interface kecil mudah dikombinasi</td>
+        </tr>
+        <tr>
+          <td><strong>Type safety</strong></td>
+          <td>Rendah — banyak method tidak relevan</td>
+          <td>Tinggi — type-hint tepat sasaran</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box box-success">
+    <strong>Manfaat Utama</strong>
+    ISP membuat kode <strong>lebih bersih, lebih mudah dites, dan lebih fleksibel</strong>.
+    Class tidak lagi "terpaksa" mengimplementasikan method yang tidak dipakai —
+    sehingga setiap class benar-benar fokus pada tanggung jawabnya.
+  </div>
+
+  <!-- ================= 3. GEJALA ================= -->
+  <h2 id="gejala">3. Gejala-Gejala Pelanggaran ISP</h2>
+
+  <p>Kenali tanda-tanda berikut di kode Anda:</p>
+
+  <ul>
+    <li>Banyak method di class implementor yang hanya berisi:
+      <code>return "";</code>, <code>return null;</code>, atau
+      <code>throw new \Exception("tidak didukung");</code></li>
+    <li>Interface punya <strong>lebih dari 5 method</strong> dan tidak semua
+      dipakai oleh semua implementor.</li>
+    <li>Nama interface terlalu umum seperti <code>Worker</code>,
+      <code>Manager</code>, <code>Service</code>, atau <code>Handler</code>
+      — biasanya tanda interface gemuk.</li>
+    <li>Ada komentar di class: <code>// method ini tidak dipakai</code>
+      atau <code>// sengaja dikosongkan</code>.</li>
+    <li>Setiap kali menambah method baru ke interface, Anda harus mengedit
+      <strong>banyak class</strong> yang mengimplementasikannya — padahal
+      method itu tidak relevan untuk sebagian besar class.</li>
+    <li>Class implementor dipaksa mengimplementasikan method yang
+      sebenarnya menjadi tanggung jawab class lain.</li>
+  </ul>
+
+  <div class="box box-warning">
+    <strong>Aturan Cepat</strong>
+    Kalau Anda menemukan <strong>method kosong atau melempar exception</strong>
+    di class implementor, itu tanda kuat ISP dilanggar.
+    <br><br>
+    Solusinya: <strong>pecah interface gemuk</strong> menjadi interface kecil
+    yang spesifik sesuai kebutuhan.
+  </div>
+
+  <!-- ================= 4. KODE SALAH ================= -->
+  <h2 id="kode-salah">4. Kode yang Melanggar ISP (Studi Kasus Worker)</h2>
+
+  <p>
+    Kita mulai dengan contoh klasik: <strong>Worker (Pekerja)</strong>.
+    Bayangkan kita punya interface <code>Worker</code> yang "serba bisa" —
+    semua pekerja dianggap bisa <code>work()</code>, <code>eat()</code>, dan
+    <code>sleep()</code>.
+  </p>
+
+  <h3>4.1 Interface Gemuk (Salah)</h3>
+
+  <span class="code-label bad">❌ SALAH — Interface Terlalu Gemuk</span>
+  <pre><code>&lt;?php
+// src/Contracts/Worker.php
+namespace App\Contracts;
+
+interface Worker
+{
+    public function work(): string;
+    public function eat(): string;
+    public function sleep(): string;
+}</code></pre>
+
+  <h3>4.2 Implementasi yang "Terpaksa"</h3>
+
+  <span class="code-label bad">❌ SALAH — Human Dipaksa Implement Semua</span>
+  <pre><code>&lt;?php
+// src/Models/Human.php
+namespace App\Models;
+
+use App\Contracts\Worker;
+
+class Human implements Worker
+{
+    public function work(): string
+    {
+        return "Bekerja 8 jam";
+    }
+
+    public function eat(): string
+    {
+        return "Makan siang";
+    }
+
+    public function sleep(): string
+    {
+        return "Tidur 8 jam";
+    }
+}</code></pre>
+
+  <span class="code-label bad">❌ SALAH — Robot Dipaksa Implement yang Tidak Relevan</span>
+  <pre><code>&lt;?php
+// src/Models/Robot.php
+namespace App\Models;
+
+use App\Contracts\Worker;
+
+class Robot implements Worker
+{
+    public function work(): string
+    {
+        return "Bekerja 24 jam";
+    }
+
+    // ⚠️ Robot tidak makan — tapi dipaksa implement
+    public function eat(): string
+    {
+        return "";  // method kosong
+    }
+
+    // ⚠️ Robot tidak tidur — tapi dipaksa implement
+    public function sleep(): string
+    {
+        return "";  // method kosong
+    }
+}</code></pre>
+
+  <h3>4.3 Kode Klien yang Rapuh</h3>
+
+  <span class="code-label bad">❌ SALAH — Kode Klien Ragu-Ragu</span>
+  <pre><code>&lt;?php
+// index.php
+require_once __DIR__ . '/vendor/autoload.php';
+
+use App\Contracts\Worker;
+use App\Models\Human;
+use App\Models\Robot;
+
+function describeWorker(Worker $worker): void
+{
+    echo $worker->work() . PHP_EOL;
+
+    // ⚠️ Harus cek manual karena tidak semua worker relevan
+    if ($worker instanceof Human) {
+        echo $worker->eat() . PHP_EOL;
+        echo $worker->sleep() . PHP_EOL;
+    }
+
+    // Robot? Method eat() dan sleep() ada, tapi kosong — membingungkan!
+}
+
+describeWorker(new Human());
+describeWorker(new Robot());</code></pre>
+
+  <div class="box box-danger">
+    <strong>Masalah Utama</strong>
+    <ul style="margin: 6px 0 0;">
+      <li><code>Robot</code> dipaksa punya method <code>eat()</code> dan <code>sleep()</code> yang <strong>tidak relevan</strong>.</li>
+      <li>Method diisi kosong (<code>return "";</code>) — membingungkan pembaca kode.</li>
+      <li>Kode klien harus melakukan pengecekan <code>instanceof</code> manual.</li>
+      <li>Melanggar ISP: <strong>class dipaksa implement method yang tidak dipakainya</strong>.</li>
+    </ul>
+  </div>
+
+  <!-- ================= 5. MASALAH ================= -->
+  <h2 id="masalah">5. Analisis Masalah pada Kode Tersebut</h2>
+
+  <p>Mari kita bedah: apa yang sebenarnya salah?</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>No</th><th>Masalah</th><th>Penjelasan</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Interface terlalu gemuk</td>
+          <td><code>Worker</code> memaksa 3 method padahal tidak semua pekerja butuh ketiganya.</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Method kosong di implementor</td>
+          <td><code>Robot::eat()</code> dan <code>Robot::sleep()</code> diisi kosong — tanda "keterpaksaan".</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Kode klien ragu</td>
+          <td>Klien harus cek <code>instanceof Human</code> untuk memastikan method aman dipanggil.</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Sulit menambah implementor baru</td>
+          <td>Setiap worker baru wajib implement <code>eat()</code> dan <code>sleep()</code> — meski tidak butuh.</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Melanggar ISP</td>
+          <td>Class dipaksa bergantung pada method yang tidak dipakainya.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>5.1 Dampak Nyata Pelanggaran Ini</h3>
+
+  <ul>
+    <li>
+      <strong>Kode penuh "dummy method"</strong> — membingungkan pembaca
+      dan menyulitkan maintenance.
+    </li>
+    <li>
+      <strong>Menambah implementor baru selalu berat</strong> — setiap
+      class baru wajib implement semua method interface, meskipun
+      separuhnya kosong.
+    </li>
+    <li>
+      <strong>Kode klien penuh intaian</strong> — <code>instanceof</code>
+      atau <code>get_class()</code> di mana-mana.
+    </li>
+    <li>
+      <strong>Kontrak interface tidak jelas</strong> — pembaca tidak tahu
+      method mana yang benar-benar didukung oleh implementor tertentu.
+    </li>
+    <li>
+      <strong>Melanggar prinsip "interface = janji"</strong> — kalau
+      implementor mengosongkan method, berarti janji itu dilanggar.
+    </li>
+  </ul>
+
+  <!-- ================= 6. KODE BENAR ================= -->
+  <h2 id="kode-benar">6. Refactor: Menerapkan ISP</h2>
+
+  <p>
+    Solusinya: <strong>pecah interface <code>Worker</code> menjadi interface
+    kecil</strong> yang spesifik — <code>Workable</code>, <code>Eatable</code>,
+    <code>Sleepable</code>. Setiap class hanya mengimplementasikan interface
+    yang <strong>relevan</strong> untuk dirinya.
+  </p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Interface <code>Workable</code> — Kontrak Bekerja</h4>
+      <p>Hanya berisi method <code>work()</code>. Semua pekerja (baik manusia maupun robot) bisa implement ini.</p>
+      <span class="code-label info">INTERFACE</span>
+      <pre><code>&lt;?php
+// src/Contracts/Workable.php
+namespace App\Contracts;
+
+interface Workable
+{
+    public function work(): string;
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Interface <code>Eatable</code> — Kontrak Makan</h4>
+      <p>Hanya berisi method <code>eat()</code>. Hanya makhluk hidup yang mengimplementasi ini.</p>
+      <span class="code-label info">INTERFACE</span>
+      <pre><code>&lt;?php
+// src/Contracts/Eatable.php
+namespace App\Contracts;
+
+interface Eatable
+{
+    public function eat(): string;
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Interface <code>Sleepable</code> — Kontrak Tidur</h4>
+      <p>Hanya berisi method <code>sleep()</code>. Hanya makhluk hidup yang butuh tidur.</p>
+      <span class="code-label info">INTERFACE</span>
+      <pre><code>&lt;?php
+// src/Contracts/Sleepable.php
+namespace App\Contracts;
+
+interface Sleepable
+{
+    public function sleep(): string;
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>Class <code>Robot</code> — Hanya Implement yang Relevan</h4>
+      <p>
+        Robot hanya mengimplementasikan <code>Workable</code> — karena
+        robot memang hanya bekerja, tidak makan, tidak tidur.
+        <strong>Tidak ada method kosong!</strong>
+      </p>
+      <span class="code-label good">✅ ISP Terpenuhi</span>
+      <pre><code>&lt;?php
+// src/Models/Robot.php
+namespace App\Models;
+
+use App\Contracts\Workable;
+
+class Robot implements Workable
+{
+    public function work(): string
+    {
+        return "Bekerja 24 jam";
+    }
+
+    // Tidak implement eat() — karena robot tidak makan
+    // Tidak implement sleep() — karena robot tidak tidur
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h4>Class <code>Human</code> — Implement Semua yang Relevan</h4>
+      <p>
+        Manusia mengimplementasikan ketiganya — karena manusia memang
+        bekerja, makan, dan tidur.
+      </p>
+      <span class="code-label good">✅ ISP Terpenuhi</span>
+      <pre><code>&lt;?php
+// src/Models/Human.php
+namespace App\Models;
+
+use App\Contracts\Workable;
+use App\Contracts\Eatable;
+use App\Contracts\Sleepable;
+
+class Human implements Workable, Eatable, Sleepable
+{
+    public function work(): string
+    {
+        return "Bekerja 8 jam";
+    }
+
+    public function eat(): string
+    {
+        return "Makan siang";
+    }
+
+    public function sleep(): string
+    {
+        return "Tidur 8 jam";
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">6</div>
+    <div class="step-body">
+      <h4>Class <code>Android</code> — Contoh Implementor Baru</h4>
+      <p>
+        Android adalah robot humanoid — bisa bekerja, <strong>dan</strong>
+        bisa "mengisi daya" (dianalogikan seperti makan). Tapi tetap tidak tidur.
+      </p>
+      <span class="code-label good">✅ ISP Terpenuhi</span>
+      <pre><code>&lt;?php
+// src/Models/Android.php
+namespace App\Models;
+
+use App\Contracts\Workable;
+use App\Contracts\Eatable;
+
+class Android implements Workable, Eatable
+{
+    public function work(): string
+    {
+        return "Bekerja 20 jam";
+    }
+
+    public function eat(): string
+    {
+        return "Mengisi daya listrik";
+    }
+
+    // Tidak implement sleep() — karena android tidak tidur
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">7</div>
+    <div class="step-body">
+      <h4>Kode Klien — Sekarang Aman dan Type-Safe</h4>
+      <p>
+        Klien bisa meminta kontrak yang <strong>spesifik</strong> sesuai
+        kebutuhannya. Tidak perlu cek <code>instanceof</code> lagi.
+      </p>
+      <span class="code-label file">index.php</span>
+      <pre><code>&lt;?php
+require_once __DIR__ . '/vendor/autoload.php';
+
+use App\Contracts\Workable;
+use App\Contracts\Eatable;
+use App\Contracts\Sleepable;
+use App\Models\Human;
+use App\Models\Robot;
+use App\Models\Android;
+
+// Fungsi yang hanya butuh "bekerja"
+function assignWork(Workable $worker): void
+{
+    echo $worker->work() . PHP_EOL;
+}
+
+// Fungsi yang hanya butuh "makan"
+function feed(Eatable $eater): void
+{
+    echo $eater->eat() . PHP_EOL;
+}
+
+// Fungsi yang hanya butuh "tidur"
+function rest(Sleepable $sleeper): void
+{
+    echo $sleeper->sleep() . PHP_EOL;
+}
+
+// ==================== PENGGUNAAN ====================
+
+// Semua bisa bekerja
+assignWork(new Human());    // Bekerja 8 jam
+assignWork(new Robot());    // Bekerja 24 jam
+assignWork(new Android());  // Bekerja 20 jam
+
+// Hanya yang bisa makan
+feed(new Human());          // Makan siang
+feed(new Android());        // Mengisi daya listrik
+// feed(new Robot());       // ❌ ERROR COMPILE — Robot tidak Eatable
+
+// Hanya yang bisa tidur
+rest(new Human());          // Tidur 8 jam
+// rest(new Robot());       // ❌ ERROR COMPILE — Robot tidak Sleepable
+// rest(new Android());     // ❌ ERROR COMPILE — Android tidak Sleepable</code></pre>
+    </div>
+  </div>
+
+  <div class="box box-success">
+    <strong>Hasil Refactor</strong>
+    Sekarang:
+    <ul style="margin: 6px 0 0;">
+      <li><code>Robot</code> hanya implement <code>Workable</code> — <strong>tidak ada method kosong</strong>.</li>
+      <li><code>Human</code> implement ketiganya — karena memang relevan.</li>
+      <li><code>Android</code> implement <code>Workable</code> + <code>Eatable</code> — kombinasi baru tanpa ubah interface.</li>
+      <li>Klien bisa meminta kontrak <strong>spesifik</strong> — error terdeteksi saat compile, bukan runtime.</li>
+      <li>Tambah implementor baru = cukup pilih interface yang relevan.</li>
+    </ul>
+  </div>
+
+  <!-- ================= 7. KONSEP OOP ================= -->
+  <h2 id="konsep-oop">7. Penggunaan Class, Interface, Abstract, dan Polimorfisme</h2>
+
+  <p>
+    Refactor ISP di atas memanfaatkan konsep OOP secara tepat. Berikut
+    ringkasan penggunaan masing-masing konsep:
+  </p>
+
+  <div class="concept-cards">
+    <div class="concept-card">
+      <span class="tag tag-class">CLASS</span>
+      <h5>Class Biasa</h5>
+      <p>
+        <code>Human</code>, <code>Robot</code>, <code>Android</code> —
+        masing-masing adalah class konkret yang bisa langsung diinstansiasi
+        dengan <code>new</code>.
+        <br><br>
+        Setiap class hanya mengimplementasi interface yang
+        <strong>relevan</strong> untuk dirinya.
+      </p>
+    </div>
+
+    <div class="concept-card">
+      <span class="tag tag-interface">INTERFACE</span>
+      <h5>Interface (Kecil &amp; Spesifik)</h5>
+      <p>
+        <code>Workable</code>, <code>Eatable</code>, <code>Sleepable</code>
+        — masing-masing hanya berisi <strong>satu method</strong>.
+        <br><br>
+        Inilah inti ISP: <strong>interface kecil lebih baik daripada interface gemuk</strong>.
+      </p>
+    </div>
+
+    <div class="concept-card">
+      <span class="tag tag-abstract">ABSTRACT CLASS</span>
+      <h5>Abstract Class</h5>
+      <p>
+        Pada contoh ini <strong>tidak digunakan</strong> karena tidak ada
+        <em>logic bersama</em> yang perlu diwarisi. Interface sudah cukup.
+        <br><br>
+        (Akan dibahas di bagian 7.1 kapan abstract class tepat dipakai
+        dalam konteks ISP.)
+      </p>
+    </div>
+
+    <div class="concept-card">
+      <span class="tag tag-poly">POLIMORFISME</span>
+      <h5>Polimorfisme</h5>
+      <p>
+        <code>assignWork(Workable $worker)</code> bisa menerima
+        <code>Human</code>, <code>Robot</code>, atau <code>Android</code> —
+        semua berperilaku sesuai kontrak <code>work()</code>.
+        <br><br>
+        Inilah polimorfisme yang <strong>bersih</strong> karena ISP terpenuhi.
+      </p>
+    </div>
+  </div>
+
+  <h3>7.1 Kapan Pakai Apa? (pada konteks ISP ini)</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Kebutuhan</th><th>Gunakan</th><th>Contoh di Modul Ini</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Kontrak tunggal yang spesifik</td>
+          <td><strong>Interface kecil</strong></td>
+          <td><code>Workable</code>, <code>Eatable</code>, <code>Sleepable</code></td>
+        </tr>
+        <tr>
+          <td>Class konkret dengan kombinasi kontrak</td>
+          <td><strong>Class + multiple implements</strong></td>
+          <td><code>Human implements Workable, Eatable, Sleepable</code></td>
+        </tr>
+        <tr>
+          <td>Ada logic bersama + kontrak</td>
+          <td><strong>Abstract class</strong></td>
+          <td>Lihat contoh di bawah (7.2)</td>
+        </tr>
+        <tr>
+          <td>Memperlakukan implementor secara seragam</td>
+          <td><strong>Polimorfisme</strong></td>
+          <td><code>assignWork(Workable $worker)</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>7.2 Kapan Abstract Class Dipakai dalam Konteks ISP?</h3>
+
+  <p>
+    Abstract class <strong>juga bisa dipakai</strong> bersama ISP, asalkan
+    <strong>tetap memisahkan interface yang tidak relevan</strong>. Contoh:
+    kita ingin semua pekerja punya method <code>getName()</code> dengan format
+    yang konsisten — sekaligus tetap memisahkan kemampuan <code>eat()</code>
+    dan <code>sleep()</code>.
+  </p>
+
+  <span class="code-label info">ABSTRACT CLASS — Logic Bersama untuk Pekerja</span>
+  <pre><code>&lt;?php
+// src/Abstracts/AbstractWorker.php
+namespace App\Abstracts;
+
+use App\Contracts\Workable;
+
+abstract class AbstractWorker implements Workable
+{
+    public function __construct(protected string $name) {}
+
+    // Method konkret — bisa dipakai semua turunan
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    // Method abstrak — WAJIB diimplementasi turunan
+    abstract public function work(): string;
+}</code></pre>
+
+  <span class="code-label info">INTERFACE TETAP TERPISAH</span>
+  <pre><code>&lt;?php
+// src/Contracts/Eatable.php
+namespace App\Contracts;
+
+interface Eatable
+{
+    public function eat(): string;
+}
+
+// src/Contracts/Sleepable.php
+namespace App\Contracts;
+
+interface Sleepable
+{
+    public function sleep(): string;
+}</code></pre>
+
+  <span class="code-label good">✅ Turunan — Kombinasi Interface Sesuai Kebutuhan</span>
+  <pre><code>&lt;?php
+// src/Models/Human.php
+namespace App\Models;
+
+use App\Abstracts\AbstractWorker;
+use App\Contracts\Eatable;
+use App\Contracts\Sleepable;
+
+class Human extends AbstractWorker implements Eatable, Sleepable
+{
+    public function work(): string
+    {
+        return $this->getName() . " bekerja 8 jam";
+    }
+
+    public function eat(): string
+    {
+        return $this->getName() . " makan siang";
+    }
+
+    public function sleep(): string
+    {
+        return $this->getName() . " tidur 8 jam";
+    }
+}</code></pre>
+
+  <span class="code-label good">✅ Turunan — Hanya yang Relevan</span>
+  <pre><code>&lt;?php
+// src/Models/Robot.php
+namespace App\Models;
+
+use App\Abstracts\AbstractWorker;
+
+class Robot extends AbstractWorker
+{
+    public function work(): string
+    {
+        return $this->getName() . " bekerja 24 jam";
+    }
+
+    // Tidak implement Eatable, tidak implement Sleepable
+}</code></pre>
+
+  <p><strong>Kode klien:</strong></p>
+  <pre><code>&lt;?php
+use App\Contracts\Workable;
+use App\Contracts\Eatable;
+use App\Contracts\Sleepable;
+use App\Models\Human;
+use App\Models\Robot;
+
+function assignWork(Workable $worker): void
+{
+    echo $worker->work() . PHP_EOL;
+}
+
+function feed(Eatable $eater): void
+{
+    echo $eater->eat() . PHP_EOL;
+}
+
+function rest(Sleepable $sleeper): void
+{
+    echo $sleeper->sleep() . PHP_EOL;
+}
+
+assignWork(new Human('Budi'));   // Budi bekerja 8 jam
+assignWork(new Robot('R2D2'));   // R2D2 bekerja 24 jam
+feed(new Human('Budi'));         // Budi makan siang
+// feed(new Robot('R2D2'));      // ❌ ERROR COMPILE — Robot tidak Eatable</code></pre>
+
+  <div class="box box-success">
+    <strong>Pola Kombinasi Interface Kecil + Abstract Class</strong>
+    <ul style="margin: 6px 0 0;">
+      <li><strong>Interface <code>Workable</code>, <code>Eatable</code>, <code>Sleepable</code></strong> — kontrak kecil dan spesifik.</li>
+      <li><strong>Abstract class <code>AbstractWorker</code></strong> — implementasi umum (logic bersama, property <code>name</code>).</li>
+      <li><strong>Class konkret</strong> — pilih kombinasi interface yang relevan.</li>
+    </ul>
+    Inilah pola yang paling umum dipakai di framework modern (Laravel, Symfony)
+    dan sangat konsisten dengan ISP.
+  </div>
+
+  <!-- ================= 8. BANDING ================= -->
+  <h2 id="banding">8. Perbandingan Sebelum vs Sesudah</h2>
+
+  <div class="compare">
+    <div class="bad-box">
+      <div class="compare-header">❌ SEBELUM (Melanggar ISP)</div>
+      <ul>
+        <li>Satu interface <code>Worker</code> dengan 3 method</li>
+        <li><code>Robot::eat()</code> dan <code>Robot::sleep()</code> kosong</li>
+        <li>Kode klien penuh <code>instanceof</code> manual</li>
+        <li>Setiap implementor wajib implement semua method</li>
+        <li>Interface tidak jelas tujuannya</li>
+        <li>Tambah implementor baru = berat</li>
+      </ul>
+    </div>
+    <div class="good-box">
+      <div class="compare-header">✅ SESUDAH (ISP Terpenuhi)</div>
+      <ul>
+        <li>Tiga interface kecil: <code>Workable</code>, <code>Eatable</code>, <code>Sleepable</code></li>
+        <li><code>Robot</code> hanya implement <code>Workable</code></li>
+        <li>Kode klien type-safe, tanpa <code>instanceof</code></li>
+        <li>Setiap implementor pilih interface yang relevan</li>
+        <li>Interface kecil dan jelas tujuannya</li>
+        <li>Tambah implementor baru = ringan</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Aspek</th><th>❌ Sebelum ISP</th><th>✅ Sesudah ISP</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Jumlah interface</strong></td>
+          <td>1 (<code>Worker</code> dengan 3 method)</td>
+          <td>3 (<code>Workable</code>, <code>Eatable</code>, <code>Sleepable</code>)</td>
+        </tr>
+        <tr>
+          <td><strong>Method di Robot</strong></td>
+          <td>3 (2 kosong)</td>
+          <td>1 (<code>work()</code>)</td>
+        </tr>
+        <tr>
+          <td><strong>Kode klien</strong></td>
+          <td>Penuh <code>instanceof</code></td>
+          <td>Type-safe, tanpa cek manual</td>
+        </tr>
+        <tr>
+          <td><strong>Kontrak interface</strong></td>
+          <td>Kabur</td>
+          <td>Jelas dan spesifik</td>
+        </tr>
+        <tr>
+          <td><strong>Menambah implementor</strong></td>
+          <td>Berat (semua method wajib)</td>
+          <td>Ringan (pilih yang relevan)</td>
+        </tr>
+        <tr>
+          <td><strong>Kombinasi baru</strong></td>
+          <td>Tidak mungkin</td>
+          <td>Mudah (<code>Android implements Workable, Eatable</code>)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ================= 9. ATURAN ================= -->
+  <h2 id="aturan">9. Aturan Praktis ISP</h2>
+
+  <p>Berikut aturan praktis yang bisa Anda hafal untuk menghindari pelanggaran ISP:</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th style="width:35%;">Aturan</th><th>Penjelasan</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Interface kecil &gt; interface gemuk</strong></td>
+          <td>Lebih baik banyak interface kecil (1–3 method) daripada satu interface besar (10+ method).</td>
+        </tr>
+        <tr>
+          <td><strong>Interface = janji</strong></td>
+          <td>Kalau class mengimplementasi interface, berarti dia <em>berjanji</em> bisa memenuhi semua method-nya dengan benar.</td>
+        </tr>
+        <tr>
+          <td><strong>Jangan kosongkan method</strong></td>
+          <td>Kalau turunan mengosongkan method, berarti dia tidak bisa memenuhi janji interface — pecah interface-nya.</td>
+        </tr>
+        <tr>
+          <td><strong>Pisahkan berdasarkan peran</strong></td>
+          <td>Bukan berdasarkan tipe class. Contoh: <code>Eatable</code> untuk semua yang bisa makan, bukan <code>Human</code> atau <code>Animal</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>Kombinasikan interface</strong></td>
+          <td>Class boleh implement banyak interface kecil sekaligus: <code>class Human implements Workable, Eatable, Sleepable</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>Interface = klien yang menentukan</strong></td>
+          <td>Interface harus dibuat dari kebutuhan <em>klien</em>, bukan dari keinginan implementor.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box box-warning">
+    <strong>Aturan Emas</strong>
+    Saat membuat interface, tanyakan:
+    <br><br>
+    <em>"Apakah <strong>semua</strong> class yang akan mengimplementasi interface ini
+    benar-benar butuh <strong>semua</strong> method-nya?"</em>
+    <br><br>
+    Kalau <strong>tidak</strong>, berarti interface itu perlu dipecah. ISP dilanggar.
+  </div>
+
+  <!-- ================= 10. STRUKTUR ================= -->
+  <h2 id="struktur">10. Struktur Folder Final</h2>
+
+  <div class="tree">
+php-isp/
+├── <span class="file">composer.json</span>
+├── <span class="file">index.php</span>
+└── <span class="folder">src/</span>
+    ├── <span class="folder">Contracts/</span>
+    │   ├── <span class="file">Workable.php</span>           <span style="color:#64748b">(interface)</span>
+    │   ├── <span class="file">Eatable.php</span>            <span style="color:#64748b">(interface)</span>
+    │   └── <span class="file">Sleepable.php</span>          <span style="color:#64748b">(interface)</span>
+    ├── <span class="folder">Abstracts/</span>
+    │   └── <span class="file">AbstractWorker.php</span>     <span style="color:#64748b">(abstract class, opsional)</span>
+    └── <span class="folder">Models/</span>
+        ├── <span class="file">Human.php</span>              <span style="color:#64748b">(Workable, Eatable, Sleepable)</span>
+        ├── <span class="file">Robot.php</span>              <span style="color:#64748b">(Workable saja)</span>
+        └── <span class="file">Android.php</span>            <span style="color:#64748b">(Workable, Eatable)</span>
+  </div>
+
+  <p><strong>Contoh <code>composer.json</code>:</strong></p>
+  <pre><code>{
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}</code></pre>
+
+  <p>Setelah semua file dibuat, jalankan:</p>
+  <pre><code>composer dump-autoload -o
+php index.php</code></pre>
+
+  <!-- ================= 11. KAITAN ================= -->
+  <h2 id="kaitan">11. Kaitan dengan Prinsip SOLID Lain</h2>
+
+  <p>
+    ISP tidak berdiri sendiri — ia sangat erat kaitannya dengan prinsip
+    SOLID lainnya:
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th style="width:25%;">Prinsip</th><th>Kaitan dengan ISP</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>S — Single Responsibility</strong></td>
+          <td>Interface kecil biasanya juga mengikuti SRP: satu interface = satu tanggung jawab.</td>
+        </tr>
+        <tr>
+          <td><strong>O — Open/Closed</strong></td>
+          <td>ISP memudahkan OCP: menambah implementor baru cukup pilih interface yang relevan, tanpa ubah interface lama.</td>
+        </tr>
+        <tr>
+          <td><strong>L — Liskov Substitution</strong></td>
+          <td>ISP <strong>mencegah pelanggaran LSP</strong>: kalau interface dipecah, tidak ada turunan yang "menolak" method induk.</td>
+        </tr>
+        <tr>
+          <td><strong>D — Dependency Inversion</strong></td>
+          <td>ISP memudahkan DIP: klien bergantung pada interface kecil yang spesifik, bukan interface gemuk yang berisi banyak method tidak relevan.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box box-info">
+    <strong>ISP dan LSP — Pasangan Serasi</strong>
+    LSP dan ISP sering disebut "saudara kembar" karena keduanya berkutat
+    pada <strong>kontrak interface</strong>:
+    <ul style="margin: 6px 0 0;">
+      <li><strong>LSP</strong> — memastikan turunan <em>bisa memenuhi</em> kontrak induk.</li>
+      <li><strong>ISP</strong> — memastikan kontrak <em>tidak membebani</em> implementor dengan method yang tidak dipakai.</li>
+    </ul>
+    Kalau LSP dilanggar (turunan melempar exception), biasanya solusinya
+    adalah <strong>memecah interface</strong> — dan itulah ISP.
+  </div>
+
+  <!-- ================= 12. LATIHAN ================= -->
+  <h2 id="latihan">12. Latihan &amp; Tugas</h2>
+
+  <div class="exercise">
+    <h4>Latihan 1 — Identifikasi Pelanggaran ISP</h4>
+    <p>Perhatikan interface berikut, lalu jawab pertanyaan:</p>
+    <pre><code>&lt;?php
+interface MultiFunctionDevice
+{
+    public function printDocument(string $doc): string;
+    public function scanDocument(string $doc): string;
+    public function faxDocument(string $doc): string;
+    public function copyDocument(string $doc): string;
+}
+
+class SimplePrinter implements MultiFunctionDevice
+{
+    public function printDocument(string $doc): string { return "Print: $doc"; }
+    public function scanDocument(string $doc): string  { return ""; }
+    public function faxDocument(string $doc): string   { return ""; }
+    public function copyDocument(string $doc): string  { return ""; }
+}</code></pre>
+    <ol>
+      <li>Mengapa <code>SimplePrinter</code> melanggar ISP?</li>
+      <li>Berapa method yang diimplementasi tapi tidak dipakai?</li>
+      <li>Apa dampak bagi developer yang menambah printer baru?</li>
+    </ol>
+  </div>
+
+  <div class="exercise">
+    <h4>Latihan 2 — Refactor dengan Interface Kecil</h4>
+    <p>Refactor kode di Latihan 1 agar menerapkan ISP. Wajib menyertakan:</p>
+    <ul>
+      <li>Interface <code>Printable</code>, <code>Scannable</code>, <code>Faxable</code>, <code>Copyable</code>.</li>
+      <li>Class <code>SimplePrinter</code> yang hanya implement <code>Printable</code>.</li>
+      <li>Class <code>OfficePrinter</code> yang implement <code>Printable, Scannable, Copyable</code>.</li>
+      <li>Class <code>FaxMachine</code> yang implement <code>Faxable</code> saja.</li>
+      <li>Kode klien yang mendemonstrasikan type-safe usage.</li>
+    </ul>
+    <p><strong>Target:</strong> menambah jenis printer baru cukup dengan memilih interface yang relevan.</p>
+  </div>
+
+  <div class="exercise">
+    <h4>Latihan 3 — Sistem Pembayaran</h4>
+    <p>Perhatikan hirarki class berikut yang melanggar ISP:</p>
+    <pre><code>interface PaymentMethod
+{
+    public function pay(float $amount): string;
+    public function refund(float $amount): string;
+    public function transfer(float $amount, string $to): string;
+}
+
+class CashPayment implements PaymentMethod
+{
+    public function pay(float $amount): string { return "Bayar tunai: $amount"; }
+    public function refund(float $amount): string
+    {
+        throw new \Exception("Tunai tidak bisa direfund!");
+    }
+    public function transfer(float $amount, string $to): string
+    {
+        throw new \Exception("Tunai tidak bisa transfer!");
+    }
+}</code></pre>
+    <p>Tugas:</p>
+    <ol>
+      <li>Jelaskan mengapa <code>CashPayment</code> melanggar ISP.</li>
+      <li>Refactor dengan memisahkan interface: <code>Payable</code>, <code>Refundable</code>, <code>Transferable</code>.</li>
+      <li>Buat class: <code>CashPayment</code> (hanya <code>Payable</code>), <code>CreditCardPayment</code> (<code>Payable</code> + <code>Refundable</code>), <code>BankTransferPayment</code> (ketiganya).</li>
+      <li>Tunjukkan bahwa kode klien aman di semua kasus.</li>
+    </ol>
+  </div>
+
+  <div class="exercise">
+    <h4>Latihan 4 — Bandingkan Interface Gemuk vs Kecil</h4>
+    <p>
+      Ambil satu sistem sederhana yang Anda kenal (misal: sistem perpustakaan
+      atau sistem akademik). Buat dua versi interface:
+    </p>
+    <ol>
+      <li><strong>Versi gemuk</strong> — satu interface besar untuk semua peran.</li>
+      <li><strong>Versi kecil</strong> — beberapa interface kecil, masing-masing 1–2 method.</li>
+    </ol>
+    <p>Untuk setiap versi, tulis:</p>
+    <ul>
+      <li>Kelebihan dan kekurangan.</li>
+      <li>Bagaimana kode klien di masing-masing versi.</li>
+      <li>Kesimpulan: mana yang akan Anda pilih untuk production, dan mengapa?</li>
+    </ul>
+  </div>
+
+  <div class="exercise">
+    <h4>Tugas Akhir — Audit ISP pada Project Sebelumnya</h4>
+    <p>
+      Ambil salah satu project PHP Anda yang punya interface, lalu audit ISP:
+    </p>
+    <ol>
+      <li>Identifikasi setiap interface yang punya <strong>lebih dari 3 method</strong>.</li>
+      <li>Untuk setiap interface, periksa:
+        <ul>
+          <li>Apakah semua implementor memakai <em>semua</em> method?</li>
+          <li>Ada implementor yang mengosongkan method?</li>
+          <li>Ada implementor yang melempar exception?</li>
+        </ul>
+      </li>
+      <li>Refactor dengan memecah interface gemuk menjadi interface kecil.</li>
+      <li>Buat class diagram <em>sebelum</em> dan <em>sesudah</em>.</li>
+      <li>Kumpulkan laporan PDF + ZIP project.</li>
+    </ol>
+    <p>
+      <strong>Nama file:</strong> <code>PBO_ISP_NamaAnda_NIM.zip</code>
+    </p>
+  </div>
+
+  <!-- ================= 13. REFERENSI ================= -->
+  <h2 id="referensi">13. Referensi</h2>
+  <ul>
+    <li>Martin, Robert C. — <em>Clean Architecture: A Craftsman's Guide to Software Structure and Design</em>. Prentice Hall, 2017. (Bab 10: ISP)</li>
+    <li>Martin, Robert C. — <em>Agile Software Development, Principles, Patterns, and Practices</em>. Prentice Hall, 2002.</li>
+    <li>Martin, Robert C. — <em>Interface Segregation Principle</em> (artikel asli): <em>https://web.archive.org/web/20150222001234/http://www.objectmentor.com/resources/articles/isp.pdf</em></li>
+    <li>Refactoring Guru — <em>Interface Segregation Principle</em>: <em>https://refactoring.guru/design-patterns/solid</em></li>
+    <li>PHP-FIG PSR-4 — <em>Autoloading Standard</em>: <em>https://www.php-fig.org/psr/psr-4/</em></li>
+    <li>PHP The Right Way — <em>Design Patterns</em>: <em>https://phptherightway.com/</em></li>
+  </ul>
+
+  <!-- ================= FOOTER ================= -->
+  <footer>
+    <p><strong>Modul Praktikum Pemrograman Berbasis Objek — Interface Segregation Principle</strong></p>
+    <p>Bagian dari Modul SOLID · Disusun untuk Pembelajaran OOP Praktis</p>
+    <p style="font-size: 0.85em;">Dicetak dari browser via <em>Print → Save as PDF</em></p>
+
+    <div class="signature">
+      <p>Dosen Pengampu,</p>
+      <br><br>
+      <p class="name">Syahru Rahmayuda</p>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

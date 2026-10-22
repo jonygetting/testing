@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul OCP — Open/Closed Principle | Praktikum PBO</title>
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-dark: #3730a3;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --code-bg: #0f172a;
+    --code-text: #e2e8f0;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --ocp: #10b981;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+
+  .container {
+    max-width: 950px;
+    margin: 0 auto;
+    padding: 40px 30px 80px;
+    background: var(--card);
+    box-shadow: 0 0 30px rgba(0,0,0,0.05);
+    min-height: 100vh;
+  }
+
+  /* ============ COVER ============ */
+  .cover {
+    text-align: center;
+    padding: 50px 20px 40px;
+    border-bottom: 3px solid var(--primary);
+    margin-bottom: 40px;
+  }
+  .cover .institution {
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--primary-dark);
+    letter-spacing: 1.5px;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+  }
+  .cover h1 {
+    font-size: 2.2em;
+    color: var(--primary-dark);
+    margin: 15px 0 8px;
+    line-height: 1.2;
+  }
+  .cover .ocp-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    background: var(--ocp);
+    color: #fff;
+    font-size: 2.5em;
+    font-weight: 800;
+    border-radius: 50%;
+    margin: 15px 0;
+    box-shadow: 0 4px 15px rgba(16,185,129,0.35);
+  }
+  .cover .subtitle {
+    font-size: 1.05em;
+    color: var(--muted);
+    margin: 15px 0 25px;
+    font-style: italic;
+    max-width: 620px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .cover .info-card {
+    background: linear-gradient(135deg, #f1f5f9 0%, #d1fae5 100%);
+    display: inline-block;
+    padding: 20px 35px;
+    border-radius: 12px;
+    margin-top: 20px;
+    text-align: left;
+    border: 2px solid var(--border);
+    min-width: 300px;
+    max-width: 100%;
+  }
+  .cover .info-card p {
+    margin: 6px 0;
+    font-size: 0.95em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .cover .info-card .label {
+    color: var(--muted);
+    min-width: 130px;
+  }
+  .cover .info-card .value {
+    font-weight: 700;
+    color: var(--primary-dark);
+    flex: 1;
+  }
+  .cover .badge {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    padding: 8px 22px;
+    border-radius: 20px;
+    font-size: 0.88em;
+    letter-spacing: 0.5px;
+    margin-top: 20px;
+  }
+
+  /* ============ HEADINGS ============ */
+  h2 {
+    font-size: 1.5em;
+    color: var(--primary-dark);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 8px;
+    margin-top: 45px;
+    page-break-after: avoid;
+  }
+
+  h3 {
+    font-size: 1.2em;
+    color: var(--text);
+    margin-top: 30px;
+    page-break-after: avoid;
+  }
+
+  h4 {
+    font-size: 1.05em;
+    color: var(--primary);
+    margin-top: 22px;
+    page-break-after: avoid;
+  }
+
+  p { margin: 12px 0; }
+
+  /* ============ TOC ============ */
+  .toc {
+    background: #f1f5f9;
+    border-left: 4px solid var(--primary);
+    padding: 20px 25px;
+    border-radius: 6px;
+    margin: 30px 0;
+  }
+  .toc h3 { margin-top: 0; color: var(--primary-dark); }
+  .toc ol { margin: 0; padding-left: 20px; }
+  .toc li { margin: 6px 0; }
+  .toc a { color: var(--text); text-decoration: none; }
+  .toc a:hover { color: var(--primary); }
+
+  /* ============ CODE ============ */
+  pre {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 18px 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.83em;
+    line-height: 1.55;
+    margin: 15px 0;
+    page-break-inside: avoid;
+    border: 1px solid #1e293b;
+    -webkit-overflow-scrolling: touch;
+  }
+  code {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.88em;
+    color: #be123c;
+    word-break: break-word;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  /* ============ CODE LABEL ============ */
+  .code-label {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 6px 6px 0 0;
+    font-size: 0.8em;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: -4px;
+  }
+  .code-label.bad   { background: var(--danger); }
+  .code-label.good  { background: var(--success); }
+  .code-label.file  { background: var(--primary); }
+  .code-label.info  { background: var(--muted); }
+  .code-label.warn  { background: var(--warning); }
+
+  /* ============ BOXES ============ */
+  .box {
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin: 18px 0;
+    page-break-inside: avoid;
+  }
+  .box-info    { background: #eff6ff; border-left: 4px solid #3b82f6; }
+  .box-warning { background: #fffbeb; border-left: 4px solid var(--warning); }
+  .box-success { background: #ecfdf5; border-left: 4px solid var(--success); }
+  .box-danger  { background: #fef2f2; border-left: 4px solid var(--danger); }
+  .box strong  { display: block; margin-bottom: 4px; }
+
+  /* ============ TABLE ============ */
+  .table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 18px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+    page-break-inside: avoid;
+    min-width: 500px;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #f1f5f9;
+    color: var(--primary-dark);
+    font-weight: 600;
+  }
+  tr:nth-child(even) td { background: #fafafa; }
+
+  /* ============ PRINCIPLE ============ */
+  .principle {
+    background: #fff;
+    border-radius: 10px;
+    padding: 25px;
+    margin: 25px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    border-top: 5px solid var(--ocp);
+    page-break-inside: avoid;
+  }
+
+  /* ============ STEPS ============ */
+  .step {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+    page-break-inside: avoid;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.05em;
+  }
+  .step-body { flex: 1; min-width: 0; }
+  .step-body h4 { margin-top: 0; }
+
+  /* ============ CONCEPT CARDS ============ */
+  .concept-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+  }
+  .concept-card {
+    background: #f8fafc;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+    page-break-inside: avoid;
+  }
+  .concept-card h5 {
+    margin: 0 0 8px;
+    color: var(--primary-dark);
+    font-size: 1em;
+  }
+  .concept-card p {
+    margin: 0;
+    font-size: 0.88em;
+    color: var(--muted);
+  }
+  .concept-card .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 0.75em;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .tag-class     { background: #dbeafe; color: #1e40af; }
+  .tag-interface { background: #fce7f3; color: #9d174d; }
+  .tag-abstract  { background: #fef3c7; color: #92400e; }
+  .tag-poly      { background: #d1fae5; color: #065f46; }
+
+  /* ============ TIMELINE ============ */
+  .timeline {
+    border-left: 3px solid var(--primary);
+    padding-left: 20px;
+    margin: 20px 0;
+  }
+  .timeline-item {
+    margin-bottom: 20px;
+    position: relative;
+    page-break-inside: avoid;
+  }
+  .timeline-item::before {
+    content: "●";
+    position: absolute;
+    left: -28px;
+    color: var(--primary);
+    font-size: 1.2em;
+    top: -2px;
+  }
+  .timeline-item h4 {
+    margin-top: 0;
+    color: var(--primary-dark);
+  }
+
+  /* ============ FLOW ============ */
+  .flow {
+    background: #f8fafc;
+    border: 1px dashed var(--border);
+    padding: 20px;
+    border-radius: 8px;
+    font-family: 'Consolas', monospace;
+    font-size: 0.85em;
+    line-height: 1.8;
+    color: var(--text);
+    page-break-inside: avoid;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* ============ COMPARE BOX ============ */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 20px 0;
+  }
+  .compare > div {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .compare .bad-box  { border: 2px solid var(--danger); }
+  .compare .good-box { border: 2px solid var(--success); }
+  .compare .compare-header {
+    padding: 10px 15px;
+    font-weight: 700;
+    font-size: 0.9em;
+    color: #fff;
+  }
+  .compare .bad-box .compare-header  { background: var(--danger); }
+  .compare .good-box .compare-header { background: var(--success); }
+  .compare ul {
+    margin: 0;
+    padding: 15px 20px 15px 35px;
+    font-size: 0.9em;
+  }
+
+  /* ============ EXERCISE ============ */
+  .exercise {
+    background: #faf5ff;
+    border: 1px solid #d8b4fe;
+    border-left: 5px solid #9333ea;
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin: 20px 0;
+    page-break-inside: avoid;
+  }
+  .exercise h4 {
+    margin-top: 0;
+    color: #6b21a8;
+    font-size: 1.05em;
+  }
+  .exercise ol { padding-left: 22px; margin: 8px 0; }
+  .exercise li { margin: 6px 0; }
+
+  /* ============ ANALOGY ============ */
+  .analogy {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    border-left: 5px solid var(--warning);
+    page-break-inside: avoid;
+  }
+  .analogy h4 {
+    margin-top: 0;
+    color: #92400e;
+  }
+
+  /* ============ FOOTER ============ */
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 2px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.88em;
+  }
+  footer .signature {
+    margin-top: 20px;
+    text-align: right;
+    color: var(--text);
+    font-size: 0.95em;
+  }
+  footer .signature .name {
+    font-weight: 700;
+    color: var(--primary-dark);
+    font-size: 1.05em;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 768px) {
+    .container { padding: 25px 18px 50px; }
+    .cover h1 { font-size: 1.6em; }
+    .cover .ocp-badge { width: 55px; height: 55px; font-size: 2em; }
+    h2 { font-size: 1.3em; }
+    h3 { font-size: 1.1em; }
+    pre { font-size: 0.75em; padding: 14px 12px; }
+    .cover .info-card { padding: 15px 20px; min-width: auto; }
+    .cover .info-card .label { min-width: auto; }
+    .step-num { width: 32px; height: 32px; font-size: 0.95em; }
+    .compare { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    body { font-size: 15px; }
+    .container { padding: 20px 12px 40px; }
+    .cover { padding: 30px 10px 25px; }
+    .cover h1 { font-size: 1.35em; }
+    .cover .ocp-badge { width: 48px; height: 48px; font-size: 1.7em; }
+    .cover .subtitle { font-size: 0.92em; }
+    pre { font-size: 0.7em; padding: 12px 10px; }
+    h2 { font-size: 1.15em; padding-bottom: 6px; }
+    .principle { padding: 18px 14px; }
+    .box { padding: 12px 15px; }
+    .exercise { padding: 14px 16px; }
+  }
+
+  /* ============ PRINT ============ */
+  @media print {
+    body { background: #fff; font-size: 11pt; }
+    .container {
+      box-shadow: none;
+      max-width: 100%;
+      padding: 0;
+    }
+    pre {
+      background: #1e293b !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      font-size: 8.5pt;
+    }
+    .box, th, .principle, .exercise, .step-num, .code-label,
+    .concept-card, .cover .ocp-badge, .compare-header, .analogy {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .cover { page-break-after: always; }
+    h2, h3 { page-break-after: avoid; }
+    pre, .box, .exercise, .principle, table, .timeline-item { page-break-inside: avoid; }
+    a { color: var(--text); text-decoration: none; }
+    .compare { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ================= COVER ================= -->
+  <div class="cover">
+    <p class="institution">Modul Praktikum Pemrograman Berbasis Objek</p>
+
+    <div class="ocp-badge">O</div>
+
+    <h1>Open/Closed Principle<br>(OCP)</h1>
+    <p class="subtitle">
+      Prinsip kedua SOLID — "Terbuka untuk ekstensi, tertutup untuk modifikasi"
+    </p>
+
+    <div class="info-card">
+      <p><span class="label">Mata Kuliah</span><span class="value">Praktikum Pemrograman Berbasis Objek</span></p>
+      <p><span class="label">Dosen Pengampu</span><span class="value">Syahru Rahmayuda</span></p>
+      <p><span class="label">Topik</span><span class="value">Open/Closed Principle</span></p>
+    </div>
+
+    <br>
+    <span class="badge">Modul Khusus OCP</span>
+  </div>
+
+  <!-- ================= TOC ================= -->
+  <div class="toc">
+    <h3>Daftar Isi</h3>
+    <ol>
+      <li><a href="#apa">Apa Itu Open/Closed Principle?</a></li>
+      <li><a href="#masalah">Memahami Masalah: Kasus DiscountCalculator</a></li>
+      <li><a href="#skenario">Skenario Nyata: Satu per Satu</a></li>
+      <li><a href="#kenapa">Kenapa Melanggar OCP Itu Bermasalah?</a></li>
+      <li><a href="#banding">Versi BENAR dengan OCP</a></li>
+      <li><a href="#cara">3 Cara Menerapkan OCP di PHP</a></li>
+      <li><a href="#perbandingan">Perbandingan: Interface vs Abstract vs Tanpa Kontrak</a></li>
+      <li><a href="#kapan">Kapan Pakai Apa?</a></li>
+      <li><a href="#kombinasi">Kombinasi Terbaik: Interface + Abstract Class</a></li>
+      <li><a href="#analogi">Analogi: Pisau Lipat vs Peralatan Dapur</a></li>
+      <li><a href="#ringkasan">Ringkasan Jawaban</a></li>
+      <li><a href="#latihan">Latihan &amp; Tugas</a></li>
+      <li><a href="#referensi">Referensi</a></li>
+    </ol>
+  </div>
+
+  <!-- ================= 1. APA ================= -->
+  <h2 id="apa">1. Apa Itu Open/Closed Principle?</h2>
+
+  <div class="principle">
+    <p style="font-size: 1.1em; font-style: italic; color: var(--primary-dark); margin-bottom: 15px;">
+      "Class harus <strong>terbuka untuk ekstensi</strong>, tapi <strong>tertutup untuk modifikasi</strong>."
+    </p>
+    <p style="text-align: right; color: var(--muted); font-size: 0.9em; margin: 0;">
+      — Bertrand Meyer, dipopulerkan oleh Robert C. Martin
+    </p>
+  </div>
+
+  <p>
+    <strong>OCP</strong> adalah prinsip kedua dari <strong>SOLID</strong>.
+    Intinya: saat menambah fitur baru, kita cukup membuat class baru
+    (ekstensi), <strong>tanpa</strong> mengubah class lama yang sudah berjalan
+    (modifikasi).
+  </p>
+
+  <div class="box box-info">
+    <strong>Dua Kata Kunci</strong>
+    <ul style="margin: 6px 0 0;">
+      <li><strong>Terbuka untuk ekstensi</strong> — kita <em>boleh</em> menambah perilaku baru (biasanya lewat class baru).</li>
+      <li><strong>Tertutup untuk modifikasi</strong> — kita <em>tidak boleh</em> mengedit class yang sudah jadi dan teruji.</li>
+    </ul>
+  </div>
+
+  <p>
+    Analogi singkat: sebuah <strong>stop kontak listrik</strong>. Anda bisa mencolok
+    TV, kipas, charger HP, laptop — <em>tanpa</em> membongkar stop kontaknya.
+    Stop kontak itu <strong>terbuka untuk alat baru</strong>, tapi <strong>tertutup
+    untuk modifikasi</strong>.
+  </p>
+
+  <!-- ================= 2. MASALAH ================= -->
+  <h2 id="masalah">2. Memahami Masalah: Kasus DiscountCalculator</h2>
+
+  <p>
+    Perhatikan kode berikut — <strong>ini contoh kode yang SALAH</strong> karena
+    melanggar OCP.
+  </p>
+
+  <span class="code-label bad">❌ SALAH — Melanggar OCP</span>
+  <pre><code>&lt;?php
+
+class DiscountCalculator
+{
+    public function calculate(string $customerType, float $price): float
+    {
+        if ($customerType === 'regular') {
+            return $price;
+        }
+        if ($customerType === 'member') {
+            return $price * 0.9;
+        }
+        if ($customerType === 'vip') {
+            return $price * 0.8;
+        }
+        // ← di sini nanti nambah terus
+        return $price;
+    }
+}</code></pre>
+
+  <p><strong>Pertanyaan:</strong> Kalau ada <strong>tipe customer baru</strong>, apa yang harus dilakukan?</p>
+
+  <div class="box box-danger">
+    <strong>Jawaban: Buka file <code>DiscountCalculator.php</code> dan edit.</strong>
+    Inilah pelanggaran OCP. Setiap fitur baru = modifikasi class lama.
+  </div>
+
+  <!-- ================= 3. SKENARIO ================= -->
+  <h2 id="skenario">3. Skenario Nyata: Satu per Satu</h2>
+
+  <p>
+    Bayangkan Anda sudah <strong>rilis ke production</strong>. Sekarang atasan
+    minta tambahan bertahap. Mari kita lihat apa yang terjadi.
+  </p>
+
+  <div class="timeline">
+
+    <div class="timeline-item">
+      <h4>📅 Bulan 1 — Rilis awal</h4>
+      <pre><code>if ($customerType === 'regular') { ... }
+if ($customerType === 'member')  { ... }
+if ($customerType === 'vip')     { ... }</code></pre>
+      <p>✅ Berjalan. File <code>DiscountCalculator.php</code> <strong>aman</strong>.</p>
+    </div>
+
+    <div class="timeline-item">
+      <h4>📅 Bulan 2 — Marketing minta tipe "mahasiswa" diskon 15%</h4>
+      <p>Anda buka lagi file <code>DiscountCalculator.php</code>:</p>
+      <pre><code>if ($customerType === 'mahasiswa') {
+    return $price * 0.85;
+}</code></pre>
+      <p>
+        ⚠️ File yang tadinya sudah dites dan berjalan, sekarang diubah.
+        Anda harus tes ulang <strong>seluruh method</strong> — jangan-jangan
+        <code>if</code> baru mengganggu logika <code>vip</code>.
+      </p>
+    </div>
+
+    <div class="timeline-item">
+      <h4>📅 Bulan 3 — Ada program "lansia" diskon 20%</h4>
+      <pre><code>if ($customerType === 'lansia') {
+    return $price * 0.80;
+}</code></pre>
+      <p>⚠️ Edit lagi. Tes ulang lagi.</p>
+    </div>
+
+    <div class="timeline-item">
+      <h4>📅 Bulan 4 — Ada "member premium" diskon 25%</h4>
+      <pre><code>if ($customerType === 'premium') {
+    return $price * 0.75;
+}</code></pre>
+      <p>⚠️ Edit lagi. File ini sekarang jadi 4x lebih panjang dari awal.</p>
+    </div>
+
+    <div class="timeline-item">
+      <h4>📅 Bulan 5 — Ada "reseller" 30%, "karyawan" 40%, "partner" 35%...</h4>
+      <p>
+        Terus begini. File yang tadinya <strong>10 baris</strong>, sekarang
+        <strong>80 baris if</strong>. Dan setiap kali edit, risiko merusak
+        yang lain makin besar.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- ================= 4. KENAPA ================= -->
+  <h2 id="kenapa">4. Kenapa Melanggar OCP Itu Bermasalah?</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Masalah</th><th>Penjelasan</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>File terus dibongkar</strong></td>
+          <td>Setiap fitur baru = edit file lama. Padahal file itu seharusnya "sudah selesai".</td>
+        </tr>
+        <tr>
+          <td><strong>Risiko bug lama muncul</strong></td>
+          <td>Mengubah <code>if</code> bisa tidak sengaja merusak <code>if</code> yang sudah berjalan.</td>
+        </tr>
+        <tr>
+          <td><strong>Tes ulang berkali-kali</strong></td>
+          <td>Setiap edit = harus tes SEMUA tipe customer lagi.</td>
+        </tr>
+        <tr>
+          <td><strong>Konflik tim</strong></td>
+          <td>Kalau 2 developer edit file yang sama bersamaan → konflik Git.</td>
+        </tr>
+        <tr>
+          <td><strong>Sulit dilacak</strong></td>
+          <td>"Kapan tipe X ditambahkan?" harus lihat history commit panjang.</td>
+        </tr>
+        <tr>
+          <td><strong>Melanggar OCP</strong></td>
+          <td>Karena class ini <em>tidak tertutup</em> dari modifikasi.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box box-warning">
+    <strong>"Melanggar OCP" Maksudnya Apa?</strong>
+    Ingat definisi OCP:
+    <br><br>
+    ✅ <strong>Terbuka</strong> untuk <em>ekstensi</em> (nambah fitur) — boleh<br>
+    ❌ <strong>Tertutup</strong> untuk <em>modifikasi</em> (edit kode lama) — <strong>seharusnya tidak boleh</strong>
+    <br><br>
+    Kode <code>DiscountCalculator</code> di atas <strong>melanggar</strong> karena:
+    <ul style="margin: 6px 0 0;">
+      <li>Nambah tipe customer = <strong>modifikasi</strong> (buka &amp; edit file lama) ❌</li>
+      <li>Seharusnya nambah tipe customer = <strong>ekstensi</strong> (buat file baru) ✅</li>
+    </ul>
+  </div>
+
+  <!-- ================= 5. BANDING ================= -->
+  <h2 id="banding">5. Versi BENAR dengan OCP</h2>
+
+  <p>Bandingkan dengan versi yang <strong>menerapkan OCP</strong>:</p>
+
+  <span class="code-label info">INTERFACE — Kontrak</span>
+  <pre><code>&lt;?php
+// src/Discounts/DiscountStrategy.php
+namespace App\Discounts;
+
+interface DiscountStrategy
+{
+    public function apply(float $price): float;
+}</code></pre>
+
+  <span class="code-label good">✅ Implementasi Spesifik</span>
+  <pre><code>&lt;?php
+// src/Discounts/VipDiscount.php
+namespace App\Discounts;
+
+class VipDiscount implements DiscountStrategy
+{
+    public function apply(float $price): float
+    {
+        return $price * 0.8;
+    }
+}</code></pre>
+
+  <p>
+    Sekarang, bayangkan atasan minta tipe <strong>"mahasiswa"</strong> diskon 15%.
+    Apa yang Anda lakukan?
+  </p>
+
+  <span class="code-label good">✅ File BARU — Tanpa Sentuh yang Lama</span>
+  <pre><code>&lt;?php
+// src/Discounts/StudentDiscount.php
+namespace App\Discounts;
+
+class StudentDiscount implements DiscountStrategy
+{
+    public function apply(float $price): float
+    {
+        return $price * 0.85;
+    }
+}</code></pre>
+
+  <div class="box box-success">
+    <strong>Selesai.</strong>
+    Anda <strong>tidak menyentuh</strong> <code>DiscountCalculator.php</code>,
+    <code>VipDiscount.php</code>, atau file apa pun yang sudah berjalan.
+    <strong>Nol risiko merusak kode lama.</strong>
+  </div>
+
+  <h3>5.1 Ilustrasi Perbedaan</h3>
+
+  <div class="flow">❌ TANPA OCP — "1 class, tambah terus"
+
+DiscountCalculator.php
+├── if regular
+├── if member
+├── if vip
+├── if mahasiswa    ← EDIT di sini
+├── if lansia       ← EDIT di sini
+├── if premium      ← EDIT di sini
+└── if reseller     ← EDIT di sini
+
+Setiap fitur baru = bongkar file lama.</div>
+
+  <div class="flow">✅ DENGAN OCP — "banyak class kecil, tinggal tambah file"
+
+DiscountCalculator.php  (tidak pernah diubah lagi)
+├── RegularDiscount.php
+├── MemberDiscount.php
+├── VipDiscount.php
+├── StudentDiscount.php   ← FILE BARU
+├── SeniorDiscount.php    ← FILE BARU
+├── PremiumDiscount.php   ← FILE BARU
+└── ResellerDiscount.php  ← FILE BARU
+
+Setiap fitur baru = buat file baru, tidak sentuh yang lama.</div>
+
+  <!-- ================= 6. CARA ================= -->
+  <h2 id="cara">6. 3 Cara Menerapkan OCP di PHP</h2>
+
+  <p>
+    Banyak yang bertanya: <em>"Apakah OCP harus pakai interface?"</em>
+    Jawabannya: <strong>tidak harus</strong> — tapi interface adalah cara paling
+    umum dan paling rapi. Ada 3 cara utama.
+  </p>
+
+  <h3>Cara 1 — Interface (Paling Umum &amp; Direkomendasikan)</h3>
+
+  <span class="code-label info">INTERFACE</span>
+  <pre><code>&lt;?php
+// src/Discounts/DiscountStrategy.php
+namespace App\Discounts;
+
+interface DiscountStrategy
+{
+    public function apply(float $price): float;
+}</code></pre>
+
+  <span class="code-label good">✅ Implementasi 1</span>
+  <pre><code>&lt;?php
+namespace App\Discounts;
+
+class VipDiscount implements DiscountStrategy
+{
+    public function apply(float $price): float
+    {
+        return $price * 0.8;
+    }
+}</code></pre>
+
+  <span class="code-label good">✅ Implementasi 2</span>
+  <pre><code>&lt;?php
+namespace App\Discounts;
+
+class StudentDiscount implements DiscountStrategy
+{
+    public function apply(float $price): float
+    {
+        return $price * 0.85;
+    }
+}</code></pre>
+
+  <div class="compare">
+    <div class="bad-box">
+      <div class="compare-header">Kekurangan</div>
+      <ul>
+        <li>Tidak bisa berisi implementasi default</li>
+        <li>Semua method harus ditulis ulang di setiap class</li>
+      </ul>
+    </div>
+    <div class="good-box">
+      <div class="compare-header">Kelebihan</div>
+      <ul>
+        <li>Kontrak jelas — semua implementor wajib punya <code>apply()</code></li>
+        <li>Bisa multi-implement (<code>implements A, B, C</code>)</li>
+        <li>Fleksibel — class tidak terikat hirarki inheritance</li>
+      </ul>
+    </div>
+  </div>
+
+  <p>
+    <strong>Kapan dipakai:</strong> saat Anda hanya butuh <em>kontrak perilaku</em>
+    tanpa logic bersama.
+  </p>
+
+  <h3>Cara 2 — Abstract Class</h3>
+
+  <span class="code-label info">ABSTRACT CLASS</span>
+  <pre><code>&lt;?php
+namespace App\Discounts;
+
+abstract class DiscountStrategy
+{
+    abstract public function apply(float $price): float;
+
+    // Method konkret yang bisa dipakai semua turunan
+    public function formatRupiah(float $amount): string
+    {
+        return "Rp " . number_format($amount, 0, ',', '.');
+    }
+}</code></pre>
+
+  <span class="code-label good">✅ Turunan 1</span>
+  <pre><code>&lt;?php
+namespace App\Discounts;
+
+class VipDiscount extends DiscountStrategy
+{
+    public function apply(float $price): float
+    {
+        return $price * 0.8;
+    }
+}</code></pre>
+
+  <span class="code-label good">✅ Turunan 2</span>
+  <pre><code>&lt;?php
+namespace App\Discounts;
+
+class StudentDiscount extends DiscountStrategy
+{
+    public function apply(float $price): float
+    {
+        return $price * 0.85;
+    }
+}</code></pre>
+
+  <div class="compare">
+    <div class="bad-box">
+      <div class="compare-header">Kekurangan</div>
+      <ul>
+        <li>Hanya bisa extends satu abstract class (PHP single inheritance)</li>
+        <li>Lebih terikat hirarki</li>
+      </ul>
+    </div>
+    <div class="good-box">
+      <div class="compare-header">Kelebihan</div>
+      <ul>
+        <li>Bisa berisi <em>logic bersama</em> (misal <code>formatRupiah()</code>)</li>
+        <li>Bisa berisi property</li>
+        <li>Kontrak tetap jelas lewat <code>abstract</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <p>
+    <strong>Kapan dipakai:</strong> saat ada <em>logic bersama</em> yang ingin
+    dipakai ulang oleh semua turunan.
+  </p>
+
+  <h3>Cara 3 — Tanpa Interface Sama Sekali (Duck Typing)</h3>
+
+  <span class="code-label warn">⚠️ Hati-hati</span>
+  <pre><code>&lt;?php
+namespace App\Discounts;
+
+class VipDiscount
+{
+    public function apply(float $price): float
+    {
+        return $price * 0.8;
+    }
+}
+
+class StudentDiscount
+{
+    public function apply(float $price): float
+    {
+        return $price * 0.85;
+    }
+}</code></pre>
+
+  <span class="code-label warn">⚠️ Calculator tanpa type-hint</span>
+  <pre><code>&lt;?php
+namespace App\Services;
+
+class DiscountCalculator
+{
+    public function calculate($strategy, float $price): float
+    {
+        // Tidak ada type-hint interface
+        return $strategy->apply($price);
+    }
+}</code></pre>
+
+  <div class="compare">
+    <div class="bad-box">
+      <div class="compare-header">Kekurangan</div>
+      <ul>
+        <li>Tidak ada kontrak — kalau <code>StudentDiscount</code> lupa punya <code>apply()</code>, baru error saat runtime</li>
+        <li>IDE tidak bisa autocomplete</li>
+        <li>Rawan typo dan bug</li>
+        <li>Tidak bisa di-type-hint dengan aman</li>
+      </ul>
+    </div>
+    <div class="good-box">
+      <div class="compare-header">Kelebihan</div>
+      <ul>
+        <li>Paling ringan, tidak ada file tambahan</li>
+        <li>Cepat untuk project kecil</li>
+      </ul>
+    </div>
+  </div>
+
+  <p>
+    <strong>Kapan dipakai:</strong> jarang di project serius. Hanya untuk
+    prototyping atau project super kecil.
+  </p>
+
+  <!-- ================= 7. PERBANDINGAN ================= -->
+  <h2 id="perbandingan">7. Perbandingan: Interface vs Abstract vs Tanpa Kontrak</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Aspek</th>
+          <th>Interface</th>
+          <th>Abstract Class</th>
+          <th>Tanpa Kontrak</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Kontrak perilaku</strong></td>
+          <td>✅ Kuat</td>
+          <td>✅ Kuat</td>
+          <td>❌ Tidak ada</td>
+        </tr>
+        <tr>
+          <td><strong>Logic bersama</strong></td>
+          <td>❌</td>
+          <td>✅ Bisa</td>
+          <td>❌</td>
+        </tr>
+        <tr>
+          <td><strong>Property</strong></td>
+          <td>❌</td>
+          <td>✅ Bisa</td>
+          <td>✅ (tapi bebas)</td>
+        </tr>
+        <tr>
+          <td><strong>Multi-inherit</strong></td>
+          <td>✅ (implements banyak)</td>
+          <td>❌ (hanya 1)</td>
+          <td>✅</td>
+        </tr>
+        <tr>
+          <td><strong>Type safety</strong></td>
+          <td>✅ Tinggi</td>
+          <td>✅ Tinggi</td>
+          <td>❌ Rendah</td>
+        </tr>
+        <tr>
+          <td><strong>IDE autocomplete</strong></td>
+          <td>✅</td>
+          <td>✅</td>
+          <td>❌</td>
+        </tr>
+        <tr>
+          <td><strong>Cocok untuk</strong></td>
+          <td>Kontrak murni</td>
+          <td>Kontrak + logic bersama</td>
+          <td>Prototyping</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ================= 8. KAPAN ================= -->
+  <h2 id="kapan">8. Kapan Pakai Apa?</h2>
+
+  <h3>Gunakan <strong>Interface</strong> saat:</h3>
+  <ul>
+    <li>Anda hanya butuh <strong>kontrak perilaku</strong> (method apa yang wajib ada).</li>
+    <li>Ingin class bisa mengimplementasikan <strong>beberapa kontrak</strong> sekaligus.</li>
+    <li>Tidak ada logic bersama yang perlu diwarisi.</li>
+    <li><strong>Ini kasus paling umum — 80% kebutuhan OCP.</strong></li>
+  </ul>
+  <p>
+    <strong>Contoh:</strong> <code>DiscountStrategy</code>,
+    <code>DatabaseInterface</code>, <code>NotificationChannel</code>,
+    <code>PaymentGateway</code>.
+  </p>
+
+  <h3>Gunakan <strong>Abstract Class</strong> saat:</h3>
+  <ul>
+    <li>Ada <strong>logic bersama</strong> yang ingin dipakai ulang oleh semua turunan.</li>
+    <li>Ada <strong>property</strong> yang ingin diwarisi.</li>
+    <li>Anda yakin hirarki ini cukup satu tingkat (tidak perlu multi-inherit).</li>
+  </ul>
+  <p>
+    <strong>Contoh:</strong> <code>AbstractController</code> (dengan
+    <code>render()</code> bersama), <code>AbstractModel</code> (dengan
+    <code>save()</code> bersama), <code>AbstractReport</code>.
+  </p>
+
+  <h3>Tanpa kontrak — hampir <strong>tidak pernah</strong> untuk OCP serius:</h3>
+  <ul>
+    <li>Hanya untuk eksperimen / prototyping.</li>
+    <li>Untuk production, hampir selalu pakai interface atau abstract class.</li>
+  </ul>
+
+  <!-- ================= 9. KOMBINASI ================= -->
+  <h2 id="kombinasi">9. Kombinasi Terbaik: Interface + Abstract Class</h2>
+
+  <p>
+    Sering di project nyata, kita <strong>kombinasikan keduanya</strong>.
+    Ini pola yang dipakai Laravel, Symfony, dan framework besar lainnya.
+  </p>
+
+  <span class="code-label info">1. Interface — Kontrak Murni</span>
+  <pre><code>&lt;?php
+// src/Discounts/DiscountStrategy.php
+namespace App\Discounts;
+
+interface DiscountStrategy
+{
+    public function apply(float $price): float;
+    public function getName(): string;
+}</code></pre>
+
+  <span class="code-label info">2. Abstract Class — Implementasi Sebagian</span>
+  <pre><code>&lt;?php
+// src/Discounts/BaseDiscount.php
+namespace App\Discounts;
+
+abstract class BaseDiscount implements DiscountStrategy
+{
+    // Implementasi getName() cukup sekali di sini
+    public function getName(): string
+    {
+        return static::class;  // otomatis ambil nama class
+    }
+
+    // Method konkret untuk format tampilan
+    public function describe(float $price): string
+    {
+        return $this->getName() . " → " . $this->apply($price);
+    }
+}</code></pre>
+
+  <span class="code-label good">3. Class Konkret — Tinggal Implement yang Belum Ada</span>
+  <pre><code>&lt;?php
+// src/Discounts/VipDiscount.php
+namespace App\Discounts;
+
+class VipDiscount extends BaseDiscount
+{
+    public function apply(float $price): float
+    {
+        return $price * 0.8;
+    }
+}</code></pre>
+
+  <span class="code-label good">4. Class Konkret Lain</span>
+  <pre><code>&lt;?php
+// src/Discounts/StudentDiscount.php
+namespace App\Discounts;
+
+class StudentDiscount extends BaseDiscount
+{
+    public function apply(float $price): float
+    {
+        return $price * 0.85;
+    }
+}</code></pre>
+
+  <div class="box box-success">
+    <strong>Kenapa Ini Bagus?</strong>
+    <ul style="margin: 6px 0 0;">
+      <li><strong>Interface <code>DiscountStrategy</code></strong> = kontrak resmi (bisa di-type-hint).</li>
+      <li><strong>Abstract class <code>BaseDiscount</code></strong> = implementasi umum (tidak duplikasi kode).</li>
+      <li><strong>Class konkret</strong> = implementasi spesifik.</li>
+    </ul>
+  </div>
+
+  <p><strong>Cara pakai di <code>index.php</code>:</strong></p>
+
+  <span class="code-label file">index.php</span>
+  <pre><code>&lt;?php
+require_once __DIR__ . '/vendor/autoload.php';
+
+use App\Discounts\VipDiscount;
+use App\Discounts\StudentDiscount;
+use App\Services\DiscountCalculator;
+
+$calculator = new DiscountCalculator();
+
+echo $calculator->calculate(new VipDiscount(), 1000000) . PHP_EOL;
+echo $calculator->calculate(new StudentDiscount(), 1000000) . PHP_EOL;
+
+// Tambah tipe baru? Cukup buat class baru:
+// class SeniorDiscount extends BaseDiscount { ... }
+// TANPA edit DiscountCalculator</code></pre>
+
+  <!-- ================= 10. ANALOGI ================= -->
+  <h2 id="analogi">10. Analogi: Pisau Lipat vs Peralatan Dapur</h2>
+
+  <div class="analogy">
+    <h4>🔪 Analogi Pisau Lipat Serbaguna</h4>
+    <p>Bayangkan <strong>pisau lipat serbaguna</strong>:</p>
+    <ul>
+      <li>Mau buka kaleng? Buka pisau lipat, cari mata pisau kaleng.</li>
+      <li>Mau potong roti? Buka lagi, tukar mata pisau.</li>
+      <li>Mau buka botol? Buka lagi, tukar lagi.</li>
+      <li><strong>Setiap "fitur baru" = bongkar alat lama.</strong></li>
+    </ul>
+  </div>
+
+  <div class="analogy">
+    <h4>🍴 Bandingkan dengan Peralatan Dapur Terpisah</h4>
+    <ul>
+      <li>Butuh buka kaleng? Ambil pembuka kaleng.</li>
+      <li>Butuh potong roti? Ambil pisau roti.</li>
+      <li>Butuh buka botol? Ambil pembuka botol.</li>
+      <li><strong>Setiap "fitur baru" = ambil alat baru. Alat lama tidak disentuh.</strong></li>
+    </ul>
+    <p><strong>Itulah bedanya melanggar OCP vs menerapkan OCP.</strong></p>
+  </div>
+
+  <div class="analogy">
+    <h4>🔌 Analogi Stop Kontak Listrik</h4>
+    <p>
+      <strong>OCP itu seperti "stop kontak listrik" di rumah.</strong>
+    </p>
+    <ul>
+      <li><strong>Interface</strong> = standar colokan (bentuk, jumlah pin, tegangan). Selama alat elektronik mengikuti standar ini, apapun bisa dicolok.</li>
+      <li><strong>Abstract class</strong> = colokan dengan adaptor bawaan — sudah punya kabel, tinggal sambung.</li>
+      <li><strong>Tanpa kontrak</strong> = colok alat pakai selotip — mungkin nyala, tapi rawan kebakaran.</li>
+    </ul>
+    <p>
+      <strong>OCP tercapai</strong> selama Anda menambahkan "alat baru" tanpa
+      membongkar "stop kontak" yang sudah terpasang.
+    </p>
+  </div>
+
+  <!-- ================= 11. RINGKASAN ================= -->
+  <h2 id="ringkasan">11. Ringkasan Jawaban</h2>
+
+  <h3>11.1 Tentang "Melanggar OCP"</h3>
+  <div class="box box-danger">
+    <strong>"Melanggar OCP"</strong>
+    = setiap kali tambah fitur, Anda <strong>terpaksa buka dan edit class lama</strong>.
+    Kode lama jadi terus berubah, rawan bug, dan sulit dites.
+    <br><br>
+    <strong>"Menerapkan OCP"</strong>
+    = setiap kali tambah fitur, Anda cukup <strong>buat class/file baru</strong>.
+    Class lama tetap utuh, sudah teruji, tidak tersentuh.
+  </div>
+
+  <h3>11.2 Tentang "Apakah Harus Pakai Interface?"</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th style="width:55%;">Pertanyaan</th><th>Jawaban</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Harus pakai interface untuk OCP?</td>
+          <td>❌ Tidak harus</td>
+        </tr>
+        <tr>
+          <td>Interface satu-satunya cara?</td>
+          <td>❌ Tidak — ada abstract class, bahkan tanpa kontrak</td>
+        </tr>
+        <tr>
+          <td>Cara paling umum &amp; direkomendasikan?</td>
+          <td>✅ <strong>Interface</strong> (atau interface + abstract class)</td>
+        </tr>
+        <tr>
+          <td>Kapan pakai abstract class?</td>
+          <td>Saat ada <strong>logic bersama</strong> yang mau diwarisi</td>
+        </tr>
+        <tr>
+          <td>Kapan pakai interface?</td>
+          <td>Saat hanya butuh <strong>kontrak</strong> tanpa logic</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>11.3 Kesimpulan Satu Kalimat</h3>
+
+  <div class="box box-success">
+    <strong>Kesimpulan</strong>
+    Dalam konteks <code>DiscountCalculator</code>: setiap ada tipe customer baru,
+    Anda terpaksa "membedah" class itu lagi — padahal seharusnya class itu
+    <strong>"selesai"</strong> dan hanya perlu <strong>"ditambah"</strong> dengan
+    class diskon baru di sebelahnya.
+  </div>
+
+  <h3>11.4 Konsep Kunci untuk Mahasiswa</h3>
+  <ul>
+    <li><strong>SOLID itu pedoman</strong>, bukan aturan mati — jangan over-engineer project kecil.</li>
+    <li><strong>S</strong> = pisahkan tanggung jawab → lebih banyak class, lebih rapi.</li>
+    <li><strong>O</strong> = tambah fitur tanpa edit class lama → <strong>pakai polimorfisme</strong>.</li>
+    <li><strong>L</strong> = jangan buat turunan yang "menolak" perilaku induk.</li>
+    <li><strong>I</strong> = jangan paksa class implement method yang tidak dipakai.</li>
+    <li><strong>D</strong> = pakai interface + Dependency Injection → mudah di-test dan diganti.</li>
+    <li><strong>SOLID menyatukan semua materi sebelumnya:</strong> class, inheritance, polimorfisme, namespace, Composer, try-catch, class diagram.</li>
+  </ul>
+
+  <!-- ================= 12. LATIHAN ================= -->
+  <h2 id="latihan">12. Latihan &amp; Tugas</h2>
+
+  <div class="exercise">
+    <h4>Latihan 1 — Identifikasi Pelanggaran OCP</h4>
+    <p>Perhatikan class berikut, lalu jawab pertanyaan:</p>
+    <pre><code>&lt;?php
+class ShippingCalculator
+{
+    public function calculate(string $courier, float $weight): float
+    {
+        if ($courier === 'jne') {
+            return $weight * 15000;
+        }
+        if ($courier === 'jnt') {
+            return $weight * 12000;
+        }
+        if ($courier === 'sicepat') {
+            return $weight * 10000;
+        }
+        return 0;
+    }
+}</code></pre>
+    <ol>
+      <li>Mengapa class ini melanggar OCP?</li>
+      <li>Kalau ada kurir baru (misal "anteraja"), apa yang harus Anda lakukan?</li>
+      <li>Sebutkan minimal <strong>3 masalah</strong> yang muncul dari cara ini.</li>
+    </ol>
+  </div>
+
+  <div class="exercise">
+    <h4>Latihan 2 — Refactor dengan Interface</h4>
+    <p>
+      Refactor <code>ShippingCalculator</code> di atas agar menerapkan OCP.
+      Wajib menyertakan:
+    </p>
+    <ul>
+      <li>Interface <code>ShippingStrategy</code> dengan method <code>calculate()</code>.</li>
+      <li>Minimal <strong>3 implementasi</strong> (JneShipping, JntShipping, SicepatShipping).</li>
+      <li>Class <code>ShippingCalculator</code> yang menerima interface di constructor.</li>
+      <li>File <code>index.php</code> yang mendemonstrasikan penggunaan.</li>
+    </ul>
+    <p><strong>Target:</strong> menambah kurir baru cukup dengan 1 file baru, tanpa edit class lama.</p>
+  </div>
+
+  <div class="exercise">
+    <h4>Latihan 3 — Bandingkan 3 Cara</h4>
+    <p>
+      Buat implementasi <strong>yang sama</strong> menggunakan 3 pendekatan berbeda:
+    </p>
+    <ol>
+      <li>Interface</li>
+      <li>Abstract Class</li>
+      <li>Tanpa kontrak (duck typing)</li>
+    </ol>
+    <p>
+      Untuk setiap pendekatan, tulis:
+    </p>
+    <ul>
+      <li>Kelebihan dan kekurangan yang Anda rasakan saat menulis.</li>
+      <li>Bagaimana IDE Anda membantu (atau tidak) di masing-masing.</li>
+      <li>Kesimpulan: mana yang akan Anda pilih untuk production, dan mengapa?</li>
+    </ul>
+  </div>
+
+  <div class="exercise">
+    <h4>Latihan 4 — Kombinasi Interface + Abstract</h4>
+    <p>
+      Buat sistem notifikasi dengan pola <strong>interface + abstract class</strong>:
+    </p>
+    <ul>
+      <li>Interface <code>NotificationChannel</code> dengan method <code>send(string $to, string $message)</code>.</li>
+      <li>Abstract class <code>BaseChannel</code> yang implements interface tersebut dan menyediakan method konkret <code>formatMessage()</code>.</li>
+      <li>Turunan: <code>EmailChannel</code>, <code>SmsChannel</code>, <code>WhatsAppChannel</code>.</li>
+      <li>Class <code>NotificationService</code> yang menerima <code>NotificationChannel</code> di constructor.</li>
+    </ul>
+    <p><strong>Target:</strong> menambah channel baru hanya dengan 1 file turunan baru.</p>
+  </div>
+
+  <div class="exercise">
+    <h4>Tugas Akhir — Refactor Project Praktikum</h4>
+    <p>
+      Ambil salah satu project PHP Anda yang punya <code>if-else</code> atau
+      <code>switch</code> panjang (lebih dari 3 kondisi). Lakukan audit OCP:
+    </p>
+    <ol>
+      <li>Identifikasi bagian mana yang melanggar OCP.</li>
+      <li>Refactor menggunakan interface (atau abstract class).</li>
+      <li>Tunjukkan bukti bahwa menambah tipe baru <strong>tidak perlu</strong> mengedit class lama.</li>
+      <li>Buat tabel perbandingan sebelum vs sesudah.</li>
+      <li>Gambar class diagram <em>sebelum</em> dan <em>sesudah</em>.</li>
+    </ol>
+    <p>
+      <strong>Nama file:</strong> <code>PBO_OCP_NamaAnda_NIM.zip</code>
+      <br>
+      <strong>Isi:</strong> folder project (tanpa <code>vendor/</code>) + PDF laporan + screenshot output.
+    </p>
+  </div>
+
+  <!-- ================= 13. REFERENSI ================= -->
+  <h2 id="referensi">13. Referensi</h2>
+  <ul>
+    <li>Martin, Robert C. — <em>Clean Architecture: A Craftsman's Guide to Software Structure and Design</em>. Prentice Hall, 2017. (Bab 8: OCP)</li>
+    <li>Martin, Robert C. — <em>Agile Software Development, Principles, Patterns, and Practices</em>. Prentice Hall, 2002.</li>
+    <li>Meyer, Bertrand — <em>Object-Oriented Software Construction</em>. Prentice Hall, 1988. (Asal prinsip OCP)</li>
+    <li>Refactoring Guru — <em>Open/Closed Principle</em>: <em>https://refactoring.guru/design-patterns/solid</em></li>
+    <li>PHP-FIG PSR-4 — <em>Autoloading Standard</em>: <em>https://www.php-fig.org/psr/psr-4/</em></li>
+    <li>PHP The Right Way — <em>Design Patterns</em>: <em>https://phptherightway.com/</em></li>
+  </ul>
+
+  <!-- ================= FOOTER ================= -->
+  <footer>
+    <p><strong>Modul Praktikum Pemrograman Berbasis Objek — Open/Closed Principle</strong></p>
+    <p>Bagian dari Modul SOLID · Disusun untuk Pembelajaran OOP Praktis</p>
+    <p style="font-size: 0.85em;">Dicetak dari browser via <em>Print → Save as PDF</em></p>
+
+    <div class="signature">
+      <p>Dosen Pengampu,</p>
+      <br><br>
+      <p class="name">Syahru Rahmayuda</p>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

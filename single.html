@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul SRP — Single Responsibility Principle | Praktikum PBO</title>
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-dark: #3730a3;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --code-bg: #0f172a;
+    --code-text: #e2e8f0;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --srp: #3b82f6;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+
+  .container {
+    max-width: 950px;
+    margin: 0 auto;
+    padding: 40px 30px 80px;
+    background: var(--card);
+    box-shadow: 0 0 30px rgba(0,0,0,0.05);
+    min-height: 100vh;
+  }
+
+  /* ============ COVER ============ */
+  .cover {
+    text-align: center;
+    padding: 50px 20px 40px;
+    border-bottom: 3px solid var(--primary);
+    margin-bottom: 40px;
+  }
+  .cover .institution {
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--primary-dark);
+    letter-spacing: 1.5px;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+  }
+  .cover h1 {
+    font-size: 2.2em;
+    color: var(--primary-dark);
+    margin: 15px 0 8px;
+    line-height: 1.2;
+  }
+  .cover .srp-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    background: var(--srp);
+    color: #fff;
+    font-size: 2.5em;
+    font-weight: 800;
+    border-radius: 50%;
+    margin: 15px 0;
+    box-shadow: 0 4px 15px rgba(59,130,246,0.35);
+  }
+  .cover .subtitle {
+    font-size: 1.05em;
+    color: var(--muted);
+    margin: 15px 0 25px;
+    font-style: italic;
+    max-width: 620px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .cover .info-card {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e0e7ff 100%);
+    display: inline-block;
+    padding: 20px 35px;
+    border-radius: 12px;
+    margin-top: 20px;
+    text-align: left;
+    border: 2px solid var(--border);
+    min-width: 300px;
+    max-width: 100%;
+  }
+  .cover .info-card p {
+    margin: 6px 0;
+    font-size: 0.95em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .cover .info-card .label {
+    color: var(--muted);
+    min-width: 130px;
+  }
+  .cover .info-card .value {
+    font-weight: 700;
+    color: var(--primary-dark);
+    flex: 1;
+  }
+  .cover .badge {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    padding: 8px 22px;
+    border-radius: 20px;
+    font-size: 0.88em;
+    letter-spacing: 0.5px;
+    margin-top: 20px;
+  }
+
+  /* ============ HEADINGS ============ */
+  h2 {
+    font-size: 1.5em;
+    color: var(--primary-dark);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 8px;
+    margin-top: 45px;
+    page-break-after: avoid;
+  }
+
+  h3 {
+    font-size: 1.2em;
+    color: var(--text);
+    margin-top: 30px;
+    page-break-after: avoid;
+  }
+
+  h4 {
+    font-size: 1.05em;
+    color: var(--primary);
+    margin-top: 22px;
+    page-break-after: avoid;
+  }
+
+  p { margin: 12px 0; }
+
+  /* ============ TOC ============ */
+  .toc {
+    background: #f1f5f9;
+    border-left: 4px solid var(--primary);
+    padding: 20px 25px;
+    border-radius: 6px;
+    margin: 30px 0;
+  }
+  .toc h3 { margin-top: 0; color: var(--primary-dark); }
+  .toc ol { margin: 0; padding-left: 20px; }
+  .toc li { margin: 6px 0; }
+  .toc a { color: var(--text); text-decoration: none; }
+  .toc a:hover { color: var(--primary); }
+
+  /* ============ CODE ============ */
+  pre {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 18px 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.83em;
+    line-height: 1.55;
+    margin: 15px 0;
+    page-break-inside: avoid;
+    border: 1px solid #1e293b;
+    -webkit-overflow-scrolling: touch;
+  }
+  code {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.88em;
+    color: #be123c;
+    word-break: break-word;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  /* ============ BADGES IN CODE ============ */
+  .code-label {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 6px 6px 0 0;
+    font-size: 0.8em;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: -4px;
+  }
+  .code-label.bad  { background: var(--danger); }
+  .code-label.good { background: var(--success); }
+  .code-label.file { background: var(--primary); }
+  .code-label.info { background: var(--muted); }
+
+  /* ============ BOXES ============ */
+  .box {
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin: 18px 0;
+    page-break-inside: avoid;
+  }
+  .box-info    { background: #eff6ff; border-left: 4px solid #3b82f6; }
+  .box-warning { background: #fffbeb; border-left: 4px solid var(--warning); }
+  .box-success { background: #ecfdf5; border-left: 4px solid var(--success); }
+  .box-danger  { background: #fef2f2; border-left: 4px solid var(--danger); }
+  .box strong  { display: block; margin-bottom: 4px; }
+
+  /* ============ TABLE ============ */
+  .table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 18px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+    page-break-inside: avoid;
+    min-width: 500px;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #f1f5f9;
+    color: var(--primary-dark);
+    font-weight: 600;
+  }
+  tr:nth-child(even) td { background: #fafafa; }
+
+  /* ============ TREE ============ */
+  .tree {
+    background: #0f172a;
+    color: #a5b4fc;
+    padding: 18px 22px;
+    border-radius: 8px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.85em;
+    line-height: 1.6;
+    white-space: pre;
+    overflow-x: auto;
+    page-break-inside: avoid;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tree .folder { color: #fbbf24; }
+  .tree .file { color: #e2e8f0; }
+  .tree .new { color: #34d399; font-weight: bold; }
+
+  /* ============ PRINCIPLE CARD ============ */
+  .principle {
+    background: #fff;
+    border-radius: 10px;
+    padding: 25px;
+    margin: 25px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    border-top: 5px solid var(--srp);
+    page-break-inside: avoid;
+  }
+
+  /* ============ STEPS ============ */
+  .step {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+    page-break-inside: avoid;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.05em;
+  }
+  .step-body { flex: 1; min-width: 0; }
+  .step-body h4 { margin-top: 0; }
+
+  /* ============ CONCEPT CARD ============ */
+  .concept-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+  }
+  .concept-card {
+    background: #f8fafc;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+    page-break-inside: avoid;
+  }
+  .concept-card h5 {
+    margin: 0 0 8px;
+    color: var(--primary-dark);
+    font-size: 1em;
+  }
+  .concept-card p {
+    margin: 0;
+    font-size: 0.88em;
+    color: var(--muted);
+  }
+  .concept-card .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 0.75em;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .tag-class     { background: #dbeafe; color: #1e40af; }
+  .tag-interface { background: #fce7f3; color: #9d174d; }
+  .tag-abstract  { background: #fef3c7; color: #92400e; }
+  .tag-poly      { background: #d1fae5; color: #065f46; }
+
+  /* ============ EXERCISE ============ */
+  .exercise {
+    background: #faf5ff;
+    border: 1px solid #d8b4fe;
+    border-left: 5px solid #9333ea;
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin: 20px 0;
+    page-break-inside: avoid;
+  }
+  .exercise h4 {
+    margin-top: 0;
+    color: #6b21a8;
+    font-size: 1.05em;
+  }
+  .exercise ol { padding-left: 22px; margin: 8px 0; }
+  .exercise li { margin: 6px 0; }
+
+  /* ============ FLOW ============ */
+  .flow {
+    background: #f8fafc;
+    border: 1px dashed var(--border);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    font-family: 'Consolas', monospace;
+    font-size: 0.88em;
+    line-height: 1.9;
+    color: var(--text);
+    page-break-inside: avoid;
+    overflow-x: auto;
+  }
+
+  /* ============ FOOTER ============ */
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 2px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.88em;
+  }
+  footer .signature {
+    margin-top: 20px;
+    text-align: right;
+    color: var(--text);
+    font-size: 0.95em;
+  }
+  footer .signature .name {
+    font-weight: 700;
+    color: var(--primary-dark);
+    font-size: 1.05em;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 768px) {
+    .container { padding: 25px 18px 50px; }
+    .cover h1 { font-size: 1.6em; }
+    .cover .srp-badge { width: 55px; height: 55px; font-size: 2em; }
+    h2 { font-size: 1.3em; }
+    h3 { font-size: 1.1em; }
+    pre { font-size: 0.75em; padding: 14px 12px; }
+    .cover .info-card { padding: 15px 20px; min-width: auto; }
+    .cover .info-card .label { min-width: auto; }
+    .step-num { width: 32px; height: 32px; font-size: 0.95em; }
+  }
+
+  @media (max-width: 480px) {
+    body { font-size: 15px; }
+    .container { padding: 20px 12px 40px; }
+    .cover { padding: 30px 10px 25px; }
+    .cover h1 { font-size: 1.35em; }
+    .cover .srp-badge { width: 48px; height: 48px; font-size: 1.7em; }
+    .cover .subtitle { font-size: 0.92em; }
+    pre { font-size: 0.7em; padding: 12px 10px; }
+    h2 { font-size: 1.15em; padding-bottom: 6px; }
+    .principle { padding: 18px 14px; }
+    .box { padding: 12px 15px; }
+    .exercise { padding: 14px 16px; }
+  }
+
+  /* ============ PRINT ============ */
+  @media print {
+    body { background: #fff; font-size: 11pt; }
+    .container {
+      box-shadow: none;
+      max-width: 100%;
+      padding: 0;
+    }
+    pre {
+      background: #1e293b !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      font-size: 8.5pt;
+    }
+    .box, th, .principle, .exercise, .step-num, .code-label,
+    .concept-card, .cover .srp-badge {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .cover { page-break-after: always; }
+    h2, h3 { page-break-after: avoid; }
+    pre, .box, .exercise, .principle, table { page-break-inside: avoid; }
+    a { color: var(--text); text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ================= COVER ================= -->
+  <div class="cover">
+    <p class="institution">Modul Praktikum Pemrograman Berbasis Objek</p>
+
+    <div class="srp-badge">S</div>
+
+    <h1>Single Responsibility<br>Principle (SRP)</h1>
+    <p class="subtitle">
+      Prinsip pertama dari SOLID — "Setiap class hanya boleh punya satu alasan untuk berubah"
+    </p>
+
+    <div class="info-card">
+      <p><span class="label">Mata Kuliah</span><span class="value">Praktikum Pemrograman Berbasis Objek</span></p>
+      <p><span class="label">Dosen Pengampu</span><span class="value">Syahru Rahmayuda</span></p>
+      <p><span class="label">Topik</span><span class="value">Single Responsibility Principle</span></p>
+    </div>
+
+    <br>
+    <span class="badge">Modul Khusus SRP</span>
+  </div>
+
+  <!-- ================= TOC ================= -->
+  <div class="toc">
+    <h3>Daftar Isi</h3>
+    <ol>
+      <li><a href="#apa">Apa Itu Single Responsibility Principle?</a></li>
+      <li><a href="#kenapa">Kenapa SRP Penting?</a></li>
+      <li><a href="#gejala">Gejala-Gejala Pelanggaran SRP</a></li>
+      <li><a href="#kode-salah">Kode yang Melanggar SRP (Studi Kasus)</a></li>
+      <li><a href="#masalah">Analisis Masalah pada Kode Tersebut</a></li>
+      <li><a href="#kode-benar">Refactor: Menerapkan SRP</a></li>
+      <li><a href="#konsep-oop">Penggunaan Class, Interface, Abstract, dan Polimorfisme</a></li>
+      <li><a href="#banding">Perbandingan Sebelum vs Sesudah</a></li>
+      <li><a href="#struktur">Struktur Folder Final</a></li>
+      <li><a href="#kapan">Kapan SRP Bisa "Dilonggarkan"?</a></li>
+      <li><a href="#latihan">Latihan &amp; Tugas</a></li>
+      <li><a href="#referensi">Referensi</a></li>
+    </ol>
+  </div>
+
+  <!-- ================= 1. APA ================= -->
+  <h2 id="apa">1. Apa Itu Single Responsibility Principle?</h2>
+
+  <div class="principle">
+    <p style="font-size: 1.1em; font-style: italic; color: var(--primary-dark); margin-bottom: 15px;">
+      "Setiap class hanya boleh memiliki <strong>satu alasan untuk berubah</strong>."
+    </p>
+    <p style="text-align: right; color: var(--muted); font-size: 0.9em; margin: 0;">
+      — Robert C. Martin (Uncle Bob)
+    </p>
+  </div>
+
+  <p>
+    <strong>SRP</strong> adalah prinsip pertama dari <strong>SOLID</strong>.
+    Intinya: sebuah class harus punya <strong>satu tanggung jawab</strong> saja.
+    Kalau class punya banyak tanggung jawab, berarti class itu punya banyak
+    alasan untuk berubah — dan itulah tanda pelanggaran SRP.
+  </p>
+
+  <div class="box box-info">
+    <strong>Analogi Sehari-hari</strong>
+    Bayangkan <strong>tukang bangunan serbaguna</strong> yang juga merangkap
+    tukang listrik, tukang pipa, tukang cat, dan desainer interior dalam satu
+    orang. Kalau ada satu pekerjaan yang bermasalah, seluruh proyek tersendat.
+    <br><br>
+    Bandingkan dengan <strong>tim spesialis</strong>: tukang batu, tukang listrik,
+    tukang cat — masing-masing ahli di bidangnya. Kalau tukang listrik cuti,
+    tukang batu tetap bekerja.
+    <br><br>
+    <strong>SRP mengajarkan cara "membentuk tim spesialis" dalam class.</strong>
+  </div>
+
+  <h3>1.1 Cara Menentukan "Satu Tanggung Jawab"</h3>
+  <p>
+    Cara paling mudah: tanyakan <em>"Siapa yang akan meminta saya mengubah class ini?"</em>
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Peminta Perubahan</th><th>Alasan</th><th>Tanggung Jawab</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Tim Marketing</td>
+          <td>Aturan diskon berubah</td>
+          <td>Perhitungan diskon</td>
+        </tr>
+        <tr>
+          <td>Tim DBA</td>
+          <td>Skema database berubah</td>
+          <td>Penyimpanan data</td>
+        </tr>
+        <tr>
+          <td>Tim Validasi</td>
+          <td>Aturan validasi email berubah</td>
+          <td>Validasi input</td>
+        </tr>
+        <tr>
+          <td>Tim Email</td>
+          <td>Pindah dari SMTP ke API</td>
+          <td>Pengiriman notifikasi</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box box-warning">
+    <strong>Aturan Praktis</strong>
+    Kalau satu class punya <strong>lebih dari satu peminta perubahan</strong>,
+    itu tanda SRP dilanggar. Pisahkan menjadi beberapa class.
+  </div>
+
+  <!-- ================= 2. KENAPA ================= -->
+  <h2 id="kenapa">2. Kenapa SRP Penting?</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th style="width:30%;">Aspek</th><th>Sebelum SRP</th><th>Sesudah SRP</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Membaca kode</strong></td>
+          <td>Satu file panjang, harus baca semua</td>
+          <td>Satu file = satu tujuan, langsung paham</td>
+        </tr>
+        <tr>
+          <td><strong>Menambah fitur</strong></td>
+          <td>Edit class besar, rawan merusak yang lain</td>
+          <td>Tambah class kecil, class lama tidak tersentuh</td>
+        </tr>
+        <tr>
+          <td><strong>Testing</strong></td>
+          <td>Harus setup seluruh dependensi</td>
+          <td>Unit test fokus pada satu tanggung jawab</td>
+        </tr>
+        <tr>
+          <td><strong>Bug</strong></td>
+          <td>Sulit dilacak, semua bercampur</td>
+          <td>Cepat ketemu, jelas lokasinya</td>
+        </tr>
+        <tr>
+          <td><strong>Kolaborasi tim</strong></td>
+          <td>Sering konflik Git di satu file</td>
+          <td>Masing-masing pegang file sendiri</td>
+        </tr>
+        <tr>
+          <td><strong>Refactor</strong></td>
+          <td>Berisiko tinggi</td>
+          <td>Aman, terisolasi</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ================= 3. GEJALA ================= -->
+  <h2 id="gejala">3. Gejala-Gejala Pelanggaran SRP</h2>
+
+  <p>Kenali tanda-tanda berikut di kode Anda:</p>
+
+  <ul>
+    <li>Class lebih dari <strong>200 baris</strong>.</li>
+    <li>Nama class mengandung kata <strong>"Manager"</strong> atau <strong>"Processor"</strong> atau <strong>"Handler"</strong> — biasanya jendela multi-tugas.</li>
+    <li>Sering muncul komentar pemisah: <code>// === VALIDASI ===</code>, <code>// === SIMPAN ===</code>.</li>
+    <li>Class punya <strong>lebih dari 5 method</strong> yang tidak saling berkaitan.</li>
+    <li>Anda sering bilang: <em>"Jangan diutak-atik class itu, nanti rusak yang lain"</em>.</li>
+    <li>Satu class punya import/dependensi ke library yang tidak berhubungan (email + database + PDF sekaligus).</li>
+  </ul>
+
+  <!-- ================= 4. KODE SALAH ================= -->
+  <h2 id="kode-salah">4. Kode yang Melanggar SRP (Studi Kasus)</h2>
+
+  <p>
+    Kita akan buat <strong>sistem pemesanan sederhana</strong> yang memproses order.
+    Perhatikan kode berikut — <strong>ini contoh kode yang SALAH</strong> karena
+    satu class melakukan terlalu banyak hal.
+  </p>
+
+  <span class="code-label bad">❌ SALAH — Melanggar SRP</span>
+  <pre><code>&lt;?php
+
+// src/OrderProcessor.php
+namespace App;
+
+use PDO;
+
+class OrderProcessor
+{
+    private PDO $pdo;
+    private array $order;
+
+    public function __construct(PDO $pdo, array $order)
+    {
+        $this-&gt;pdo   = $pdo;
+        $this-&gt;order = $order;
+    }
+
+    // ============================================
+    // TANGGUNG JAWAB 1: Validasi data order
+    // ============================================
+    public function validate(): bool
+    {
+        if (empty($this-&gt;order['items'])) {
+            return false;
+        }
+        if (empty($this-&gt;order['customer_email'])) {
+            return false;
+        }
+        if (!filter_var($this-&gt;order['customer_email'], FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+        foreach ($this-&gt;order['items'] as $item) {
+            if (!isset($item['qty']) || $item['qty'] &lt;= 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // ============================================
+    // TANGGUNG JAWAB 2: Hitung total harga
+    // ============================================
+    public function calculateTotal(): float
+    {
+        $total = 0;
+        foreach ($this-&gt;order['items'] as $item) {
+            $total += $item['price'] * $item['qty'];
+        }
+        // Tambah pajak 11%
+        $total = $total * 1.11;
+        return $total;
+    }
+
+    // ============================================
+    // TANGGUNG JAWAB 3: Simpan ke database
+    // ============================================
+    public function save(): void
+    {
+        $stmt = $this-&gt;pdo-&gt;prepare(
+            "INSERT INTO orders (customer_email, total, created_at)
+             VALUES (?, ?, NOW())"
+        );
+        $stmt-&gt;execute([
+            $this-&gt;order['customer_email'],
+            $this-&gt;calculateTotal()
+        ]);
+    }
+
+    // ============================================
+    // TANGGUNG JAWAB 4: Kirim email konfirmasi
+    // ============================================
+    public function sendConfirmationEmail(): void
+    {
+        $to      = $this-&gt;order['customer_email'];
+        $subject = "Konfirmasi Pesanan";
+        $message = "Terima kasih! Total pesanan Anda: Rp " .
+                   number_format($this-&gt;calculateTotal(), 0, ',', '.');
+        mail($to, $subject, $message);
+    }
+
+    // ============================================
+    // TANGGUNG JAWAB 5: Cetak invoice PDF
+    // ============================================
+    public function generateInvoice(): string
+    {
+        $html  = "&lt;h1&gt;INVOICE&lt;/h1&gt;";
+        $html .= "&lt;p&gt;Customer: " . $this-&gt;order['customer_email'] . "&lt;/p&gt;";
+        $html .= "&lt;p&gt;Total: Rp " . number_format($this-&gt;calculateTotal(), 0, ',', '.') . "&lt;/p&gt;";
+
+        // Simulasi generate PDF
+        return $html;
+    }
+
+    // ============================================
+    // TANGGUNG JAWAB 6: Log aktivitas
+    // ============================================
+    public function log(string $message): void
+    {
+        file_put_contents(
+            __DIR__ . '/../logs/order.log',
+            date('[Y-m-d H:i:s] ') . $message . PHP_EOL,
+            FILE_APPEND
+        );
+    }
+}</code></pre>
+
+  <p><strong>Cara pakai di <code>index.php</code>:</strong></p>
+  <pre><code>&lt;?php
+require_once __DIR__ . '/vendor/autoload.php';
+
+use App\OrderProcessor;
+
+$pdo = new PDO('mysql:host=localhost;dbname=toko', 'root', '');
+
+$order = [
+    'customer_email' =&gt; 'budi@example.com',
+    'items' =&gt; [
+        ['name' =&gt; 'Laptop', 'price' =&gt; 7500000, 'qty' =&gt; 1],
+        ['name' =&gt; 'Mouse',  'price' =&gt; 150000,  'qty' =&gt; 2],
+    ]
+];
+
+$processor = new OrderProcessor($pdo, $order);
+
+if ($processor-&gt;validate()) {
+    $processor-&gt;save();
+    $processor-&gt;sendConfirmationEmail();
+    echo $processor-&gt;generateInvoice();
+    $processor-&gt;log("Order baru dibuat");
+}</code></pre>
+
+  <!-- ================= 5. MASALAH ================= -->
+  <h2 id="masalah">5. Analisis Masalah pada Kode Tersebut</h2>
+
+  <p>Mari kita bedah: <strong>berapa tanggung jawab</strong> yang dimiliki <code>OrderProcessor</code>?</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>No</th><th>Method</th><th>Tanggung Jawab</th><th>Siapa yang Minta Ubah?</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><code>validate()</code></td><td>Validasi input</td><td>Tim bisnis / QA</td></tr>
+        <tr><td>2</td><td><code>calculateTotal()</code></td><td>Hitungan pajak &amp; diskon</td><td>Tim keuangan</td></tr>
+        <tr><td>3</td><td><code>save()</code></td><td>Penyimpanan database</td><td>Tim DBA</td></tr>
+        <tr><td>4</td><td><code>sendConfirmationEmail()</code></td><td>Pengiriman email</td><td>Tim email / SMTP</td></tr>
+        <tr><td>5</td><td><code>generateInvoice()</code></td><td>Format PDF</td><td>Tim desain dokumen</td></tr>
+        <tr><td>6</td><td><code>log()</code></td><td>Logging</td><td>Tim DevOps</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box box-danger">
+    <strong>Hasilnya: 6 Alasan untuk Berubah</strong>
+    Satu class punya <strong>6 alasan berbeda</strong> untuk diubah. Kalau tim desain minta ubah format invoice, Anda edit file ini. Kalau tim DBA ubah skema database, Anda edit file yang sama. Kalau aturan validasi berubah, edit file yang sama juga.
+    <br><br>
+    <strong>Inilah pelanggaran SRP yang paling klasik.</strong>
+  </div>
+
+  <h3>5.1 Dampak Nyata Pelanggaran Ini</h3>
+
+  <ul>
+    <li>
+      <strong>Regresi bug</strong> — saat mengubah <code>sendConfirmationEmail()</code>
+      untuk pakai API, tanpa sadar merusak <code>save()</code> di file yang sama.
+    </li>
+    <li>
+      <strong>Konflik Git</strong> — 3 developer bekerja di satu file, saling tabrak.
+    </li>
+    <li>
+      <strong>Testing mustahil</strong> — mau tes <code>calculateTotal()</code> harus
+      siapkan PDO, mail server, file system.
+    </li>
+    <li>
+      <strong>Reuse tidak mungkin</strong> — mau pakai <code>generateInvoice()</code>
+      di project lain? Harus copy-paste seluruh class.
+    </li>
+    <li>
+      <strong>Ketergantungan library</strong> — class butuh <code>PDO</code>,
+      <code>mail()</code>, <code>file_put_contents()</code> sekaligus — padahal
+      masing-masing adalah "dunia" berbeda.
+    </li>
+  </ul>
+
+  <!-- ================= 6. KODE BENAR ================= -->
+  <h2 id="kode-benar">6. Refactor: Menerapkan SRP</h2>
+
+  <p>
+    Sekarang kita pecah <code>OrderProcessor</code> menjadi <strong>6 class kecil</strong>,
+    masing-masing dengan satu tanggung jawab.
+  </p>
+
+  <!-- Step 1 -->
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Class <code>Order</code> — Model Data</h4>
+      <p>Hanya bertugas <strong>menyimpan data order</strong>. Tidak ada logika bisnis.</p>
+      <span class="code-label good">✅ SRP</span>
+      <pre><code>&lt;?php
+// src/Models/Order.php
+namespace App\Models;
+
+class Order
+{
+    public function __construct(
+        private string $customerEmail,
+        private array  $items
+    ) {}
+
+    public function getCustomerEmail(): string
+    {
+        return $this-&gt;customerEmail;
+    }
+
+    public function getItems(): array
+    {
+        return $this-&gt;items;
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Class <code>OrderValidator</code> — Validasi</h4>
+      <p>Hanya bertugas <strong>memvalidasi order</strong>. Kalau aturan validasi berubah, hanya class ini yang diubah.</p>
+      <span class="code-label good">✅ SRP</span>
+      <pre><code>&lt;?php
+// src/Validators/OrderValidator.php
+namespace App\Validators;
+
+use App\Models\Order;
+
+class OrderValidator
+{
+    public function isValid(Order $order): bool
+    {
+        if (empty($order-&gt;getItems())) {
+            return false;
+        }
+
+        if (!filter_var($order-&gt;getCustomerEmail(), FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+
+        foreach ($order-&gt;getItems() as $item) {
+            if (!isset($item['qty']) || $item['qty'] &lt;= 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Class <code>PriceCalculator</code> — Hitung Total</h4>
+      <p>Hanya bertugas <strong>menghitung total harga</strong> + pajak. Terpisah dari database dan email.</p>
+      <span class="code-label good">✅ SRP</span>
+      <pre><code>&lt;?php
+// src/Services/PriceCalculator.php
+namespace App\Services;
+
+use App\Models\Order;
+
+class PriceCalculator
+{
+    private const TAX_RATE = 0.11; // PPN 11%
+
+    public function calculateTotal(Order $order): float
+    {
+        $subtotal = 0;
+        foreach ($order-&gt;getItems() as $item) {
+            $subtotal += $item['price'] * $item['qty'];
+        }
+
+        return $subtotal * (1 + self::TAX_RATE);
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>Interface <code>OrderRepositoryInterface</code> — Kontrak Penyimpanan</h4>
+      <p>
+        Gunakan <strong>interface</strong> agar bisa ganti dari MySQL ke PostgreSQL
+        atau ke <em>in-memory</em> untuk testing, tanpa mengubah class lain.
+      </p>
+      <span class="code-label info">INTERFACE</span>
+      <pre><code>&lt;?php
+// src/Contracts/OrderRepositoryInterface.php
+namespace App\Contracts;
+
+use App\Models\Order;
+
+interface OrderRepositoryInterface
+{
+    public function save(Order $order, float $total): int;
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- Step 5 -->
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h4>Class <code>MySQLOrderRepository</code> — Implementasi Database</h4>
+      <p>Implementasi konkret interface. Hanya bertugas <strong>berbicara dengan MySQL</strong>.</p>
+      <span class="code-label good">✅ SRP + Interface</span>
+      <pre><code>&lt;?php
+// src/Repositories/MySQLOrderRepository.php
+namespace App\Repositories;
+
+use App\Contracts\OrderRepositoryInterface;
+use App\Models\Order;
+use PDO;
+
+class MySQLOrderRepository implements OrderRepositoryInterface
+{
+    public function __construct(private PDO $pdo) {}
+
+    public function save(Order $order, float $total): int
+    {
+        $stmt = $this-&gt;pdo-&gt;prepare(
+            "INSERT INTO orders (customer_email, total, created_at)
+             VALUES (?, ?, NOW())"
+        );
+        $stmt-&gt;execute([$order-&gt;getCustomerEmail(), $total]);
+
+        return (int) $this-&gt;pdo-&gt;lastInsertId();
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- Step 6 -->
+  <div class="step">
+    <div class="step-num">6</div>
+    <div class="step-body">
+      <h4>Abstract Class <code>Notifier</code> — Basis Pengiriman Notifikasi</h4>
+      <p>
+        Gunakan <strong>abstract class</strong> karena ada <em>logic bersama</em>
+        (format pesan) yang bisa diwarisi oleh semua notifier. Method
+        <code>send()</code> tetap abstrak — wajib diimplementasi turunannya.
+      </p>
+      <span class="code-label info">ABSTRACT CLASS</span>
+      <pre><code>&lt;?php
+// src/Notifications/Notifier.php
+namespace App\Notifications;
+
+use App\Models\Order;
+
+abstract class Notifier
+{
+    // Method abstrak — WAJIB diimplementasi turunan
+    abstract public function send(Order $order, float $total): void;
+
+    // Method konkret — BISA dipakai semua turunan (logic bersama)
+    protected function buildMessage(Order $order, float $total): string
+    {
+        return "Halo " . $order-&gt;getCustomerEmail() .
+               ", pesanan Anda dengan total Rp " .
+               number_format($total, 0, ',', '.') .
+               " telah diterima.";
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- Step 7 -->
+  <div class="step">
+    <div class="step-num">7</div>
+    <div class="step-body">
+      <h4>Class <code>EmailNotifier</code> — Implementasi Email</h4>
+      <p>Turunan dari <code>Notifier</code>. Hanya bertugas <strong>kirim lewat email</strong>.</p>
+      <span class="code-label good">✅ SRP + Abstract + Polymorphism</span>
+      <pre><code>&lt;?php
+// src/Notifications/EmailNotifier.php
+namespace App\Notifications;
+
+use App\Models\Order;
+
+class EmailNotifier extends Notifier
+{
+    public function send(Order $order, float $total): void
+    {
+        $message = $this-&gt;buildMessage($order, $total);
+        mail($order-&gt;getCustomerEmail(), "Konfirmasi Pesanan", $message);
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- Step 8 -->
+  <div class="step">
+    <div class="step-num">8</div>
+    <div class="step-body">
+      <h4>Class <code>WhatsAppNotifier</code> — Implementasi WhatsApp</h4>
+      <p>Turunan lain dari <code>Notifier</code>. Bisa ditambahkan <strong>tanpa ubah class lain</strong>.</p>
+      <span class="code-label good">✅ SRP + Abstract + Polymorphism</span>
+      <pre><code>&lt;?php
+// src/Notifications/WhatsAppNotifier.php
+namespace App\Notifications;
+
+use App\Models\Order;
+
+class WhatsAppNotifier extends Notifier
+{
+    public function send(Order $order, float $total): void
+    {
+        $message = $this-&gt;buildMessage($order, $total);
+        // simulasi kirim WhatsApp
+        error_log("[WA] " . $message);
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- Step 9 -->
+  <div class="step">
+    <div class="step-num">9</div>
+    <div class="step-body">
+      <h4>Class <code>InvoiceGenerator</code> — Generate Invoice</h4>
+      <p>Hanya bertugas <strong>membuat invoice PDF/HTML</strong>. Terpisah dari pengiriman.</p>
+      <span class="code-label good">✅ SRP</span>
+      <pre><code>&lt;?php
+// src/Services/InvoiceGenerator.php
+namespace App\Services;
+
+use App\Models\Order;
+
+class InvoiceGenerator
+{
+    public function generateHtml(Order $order, float $total): string
+    {
+        $html  = "&lt;h1&gt;INVOICE&lt;/h1&gt;";
+        $html .= "&lt;p&gt;Customer: " . $order-&gt;getCustomerEmail() . "&lt;/p&gt;";
+        $html .= "&lt;p&gt;Total: Rp " . number_format($total, 0, ',', '.') . "&lt;/p&gt;";
+        return $html;
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- Step 10 -->
+  <div class="step">
+    <div class="step-num">10</div>
+    <div class="step-body">
+      <h4>Class <code>Logger</code> — Logging</h4>
+      <p>Hanya bertugas <strong>menulis log</strong>.</p>
+      <span class="code-label good">✅ SRP</span>
+      <pre><code>&lt;?php
+// src/Services/Logger.php
+namespace App\Services;
+
+class Logger
+{
+    public function __construct(private string $logFile)
+    {
+        $this-&gt;logFile = $logFile;
+    }
+
+    public function log(string $message): void
+    {
+        file_put_contents(
+            $this-&gt;logFile,
+            date('[Y-m-d H:i:s] ') . $message . PHP_EOL,
+            FILE_APPEND
+        );
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- Step 11 -->
+  <div class="step">
+    <div class="step-num">11</div>
+    <div class="step-body">
+      <h4>Class <code>OrderService</code> — Koordinator</h4>
+      <p>
+        Class ini adalah <strong>"konduktor"</strong> yang merangkai semua
+        komponen di atas. Ia <em>tidak</em> menghitung, <em>tidak</em> menyimpan
+        langsung, <em>tidak</em> mengirim — ia hanya <strong>mengoordinasikan</strong>.
+        Itulah satu-satunya tanggung jawabnya.
+      </p>
+      <span class="code-label good">✅ SRP sebagai Orkestrator</span>
+      <pre><code>&lt;?php
+// src/Services/OrderService.php
+namespace App\Services;
+
+use App\Models\Order;
+use App\Validators\OrderValidator;
+use App\Contracts\OrderRepositoryInterface;
+use App\Notifications\Notifier;
+use App\Services\InvoiceGenerator;
+use App\Services\Logger;
+use InvalidArgumentException;
+
+class OrderService
+{
+    public function __construct(
+        private OrderValidator          $validator,
+        private PriceCalculator         $calculator,
+        private OrderRepositoryInterface $repository,
+        private Notifier                $notifier,
+        private InvoiceGenerator        $invoice,
+        private Logger                  $logger
+    ) {}
+
+    public function process(Order $order): string
+    {
+        // 1. Validasi
+        if (!$this-&gt;validator-&gt;isValid($order)) {
+            throw new InvalidArgumentException("Order tidak valid");
+        }
+
+        // 2. Hitung total
+        $total = $this-&gt;calculator-&gt;calculateTotal($order);
+
+        // 3. Simpan
+        $this-&gt;repository-&gt;save($order, $total);
+
+        // 4. Kirim notifikasi
+        $this-&gt;notifier-&gt;send($order, $total);
+
+        // 5. Log
+        $this-&gt;logger-&gt;log("Order untuk {$order-&gt;getCustomerEmail()} dibuat");
+
+        // 6. Return invoice
+        return $this-&gt;invoice-&gt;generateHtml($order, $total);
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <p><strong>Cara pakai di <code>index.php</code> — semuanya dirangkai dari luar:</strong></p>
+  <span class="code-label file">index.php</span>
+  <pre><code>&lt;?php
+require_once __DIR__ . '/vendor/autoload.php';
+
+use App\Models\Order;
+use App\Services\OrderService;
+use App\Services\PriceCalculator;
+use App\Services\InvoiceGenerator;
+use App\Services\Logger;
+use App\Validators\OrderValidator;
+use App\Repositories\MySQLOrderRepository;
+use App\Notifications\EmailNotifier;
+use App\Notifications\WhatsAppNotifier;
+
+// Siapkan dependensi
+$pdo        = new PDO('mysql:host=localhost;dbname=toko', 'root', '');
+$validator  = new OrderValidator();
+$calculator = new PriceCalculator();
+$repository = new MySQLOrderRepository($pdo);
+$notifier   = new EmailNotifier();          // ← mudah diganti!
+$invoice    = new InvoiceGenerator();
+$logger     = new Logger(__DIR__ . '/logs/order.log');
+
+// Rangkai service
+$service = new OrderService(
+    $validator, $calculator, $repository, $notifier, $invoice, $logger
+);
+
+// Buat order
+$order = new Order(
+    'budi@example.com',
+    [
+        ['name' =&gt; 'Laptop', 'price' =&gt; 7500000, 'qty' =&gt; 1],
+        ['name' =&gt; 'Mouse',  'price' =&gt; 150000,  'qty' =&gt; 2],
+    ]
+);
+
+// Proses
+echo $service-&gt;process($order);
+
+// Ingin pakai WhatsApp?
+// Cukup ganti satu baris:
+// $notifier = new WhatsAppNotifier();
+// Class lain TIDAK berubah.</code></pre>
+
+  <!-- ================= 7. KONSEP OOP ================= -->
+  <h2 id="konsep-oop">7. Penggunaan Class, Interface, Abstract, dan Polimorfisme</h2>
+
+  <p>
+    Refactor SRP di atas memanfaatkan <strong>semua pilar OOP</strong> secara
+    bersamaan. Berikut ringkasan penggunaan masing-masing konsep:
+  </p>
+
+  <div class="concept-cards">
+    <div class="concept-card">
+      <span class="tag tag-class">CLASS</span>
+      <h5>Class Biasa</h5>
+      <p>
+        <code>Order</code>, <code>OrderValidator</code>, <code>PriceCalculator</code>,
+        <code>InvoiceGenerator</code>, <code>Logger</code>, <code>MySQLOrderRepository</code>,
+        <code>EmailNotifier</code>, <code>WhatsAppNotifier</code>.
+        <br><br>
+        Semua adalah class konkret yang bisa langsung diinstansiasi dengan <code>new</code>.
+        Setiap class punya <strong>satu tanggung jawab</strong>.
+      </p>
+    </div>
+
+    <div class="concept-card">
+      <span class="tag tag-interface">INTERFACE</span>
+      <h5>Interface</h5>
+      <p>
+        <code>OrderRepositoryInterface</code> — kontrak untuk semua repository.
+        <br><br>
+        Memungkinkan ganti dari MySQL ke PostgreSQL atau in-memory tanpa ubah
+        <code>OrderService</code>. Ini sekaligus penerapan <strong>Dependency Inversion</strong>.
+      </p>
+    </div>
+
+    <div class="concept-card">
+      <span class="tag tag-abstract">ABSTRACT CLASS</span>
+      <h5>Abstract Class</h5>
+      <p>
+        <code>Notifier</code> — dasar untuk semua jenis notifikasi.
+        <br><br>
+        Berisi method konkret <code>buildMessage()</code> yang bisa dipakai ulang
+        oleh semua turunan, dan method abstrak <code>send()</code> yang wajib
+        diimplementasi.
+      </p>
+    </div>
+
+    <div class="concept-card">
+      <span class="tag tag-poly">POLIMORFISME</span>
+      <h5>Polimorfisme</h5>
+      <p>
+        <code>OrderService</code> menerima parameter <code>Notifier $notifier</code>,
+        bisa diisi <code>EmailNotifier</code> atau <code>WhatsAppNotifier</code>.
+        <br><br>
+        Method <code>send()</code> dipanggil sama, tapi perilaku berbeda tergantung
+        objek konkretnya. Inilah esensi polimorfisme.
+      </p>
+    </div>
+  </div>
+
+  <h3>7.1 Kapan Pakai Apa? (pada konteks SRP ini)</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Kebutuhan</th><th>Gunakan</th><th>Contoh di Modul Ini</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Objek dengan data</td>
+          <td><strong>Class</strong></td>
+          <td><code>Order</code></td>
+        </tr>
+        <tr>
+          <td>Logika tunggal tanpa state</td>
+          <td><strong>Class</strong></td>
+          <td><code>OrderValidator</code>, <code>PriceCalculator</code></td>
+        </tr>
+        <tr>
+          <td>Butuh ganti implementasi nanti</td>
+          <td><strong>Interface</strong></td>
+          <td><code>OrderRepositoryInterface</code></td>
+        </tr>
+        <tr>
+          <td>Ada logic bersama + kontrak</td>
+          <td><strong>Abstract class</strong></td>
+          <td><code>Notifier</code></td>
+        </tr>
+        <tr>
+          <td>Beberapa varian perilaku</td>
+          <td><strong>Polimorfisme</strong></td>
+          <td><code>EmailNotifier</code>, <code>WhatsAppNotifier</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ================= 8. BANDING ================= -->
+  <h2 id="banding">8. Perbandingan Sebelum vs Sesudah</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Aspek</th><th>❌ Sebelum SRP</th><th>✅ Sesudah SRP</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Jumlah class</strong></td>
+          <td>1 class besar (<code>OrderProcessor</code>)</td>
+          <td>10 class kecil dengan tanggung jawab spesifik</td>
+        </tr>
+        <tr>
+          <td><strong>Panjang file</strong></td>
+          <td>~100 baris satu file</td>
+          <td>15–30 baris per file</td>
+        </tr>
+        <tr>
+          <td><strong>Alasan berubah</strong></td>
+          <td>6 alasan</td>
+          <td>1 alasan per class</td>
+        </tr>
+        <tr>
+          <td><strong>Testing</strong></td>
+          <td>Butuh PDO + mail + filesystem</td>
+          <td>Bisa uji tiap class terpisah</td>
+        </tr>
+        <tr>
+          <td><strong>Ganti database</strong></td>
+          <td>Edit <code>OrderProcessor</code></td>
+          <td>Buat implementasi interface baru</td>
+        </tr>
+        <tr>
+          <td><strong>Ganti ke WhatsApp</strong></td>
+          <td>Edit <code>OrderProcessor</code></td>
+          <td>Buat <code>WhatsAppNotifier</code>, ganti 1 baris di <code>index.php</code></td>
+        </tr>
+        <tr>
+          <td><strong>Konflik Git</strong></td>
+          <td>Sering (semua developer sentuh 1 file)</td>
+          <td>Jarang (masing-masing punya file sendiri)</td>
+        </tr>
+        <tr>
+          <td><strong>Reuse di project lain</strong></td>
+          <td>Sulit</td>
+          <td>Mudah (copy folder <code>Services/</code>)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box box-success">
+    <strong>Perubahan Satu Baris</strong>
+    Ingin mengganti dari <strong>email ke WhatsApp</strong>?
+    <pre style="margin: 8px 0 0; font-size: 0.8em;"><code>// sebelum:
+$notifier = new EmailNotifier();
+
+// sesudah:
+$notifier = new WhatsAppNotifier();
+
+// Semua class lain TIDAK tersentuh.</code></pre>
+    Bandingkan dengan versi lama: harus edit method <code>sendConfirmationEmail()</code> di <code>OrderProcessor</code>.
+  </div>
+
+  <!-- ================= 9. STRUKTUR ================= -->
+  <h2 id="struktur">9. Struktur Folder Final</h2>
+
+  <div class="tree">
+php-srp/
+├── <span class="file">composer.json</span>
+├── <span class="file">index.php</span>
+└── <span class="folder">src/</span>
+    ├── <span class="folder">Models/</span>
+    │   └── <span class="file">Order.php</span>
+    ├── <span class="folder">Validators/</span>
+    │   └── <span class="file">OrderValidator.php</span>
+    ├── <span class="folder">Contracts/</span>
+    │   └── <span class="file">OrderRepositoryInterface.php</span>
+    ├── <span class="folder">Repositories/</span>
+    │   └── <span class="file">MySQLOrderRepository.php</span>
+    ├── <span class="folder">Notifications/</span>
+    │   ├── <span class="file">Notifier.php</span>              <span style="color:#64748b">(abstract)</span>
+    │   ├── <span class="file">EmailNotifier.php</span>
+    │   └── <span class="file">WhatsAppNotifier.php</span>
+    └── <span class="folder">Services/</span>
+        ├── <span class="file">PriceCalculator.php</span>
+        ├── <span class="file">InvoiceGenerator.php</span>
+        ├── <span class="file">Logger.php</span>
+        └── <span class="file">OrderService.php</span>          <span style="color:#64748b">(koordinator)</span>
+  </div>
+
+  <p><strong>Contoh <code>composer.json</code>:</strong></p>
+  <pre><code>{
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}</code></pre>
+
+  <p>Setelah semua file dibuat, jalankan:</p>
+  <pre><code>composer dump-autoload -o
+php -S localhost:8000</code></pre>
+
+  <!-- ================= 10. KAPAN ================= -->
+  <h2 id="kapan">10. Kapan SRP Bisa "Dilonggarkan"?</h2>
+
+  <p>
+    SRP adalah pedoman, bukan hukum mutlak. Ada situasi di mana menerapkan SRP
+    secara ketat justru <em>over-engineering</em>:
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Situasi</th><th>Boleh Digabung</th><th>Alasan</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Project kecil (1–3 file)</td>
+          <td>Ya</td>
+          <td>Memecah terlalu banyak class = overhead tanpa manfaat</td>
+        </tr>
+        <tr>
+          <td>Prototyping cepat</td>
+          <td>Ya</td>
+          <td>Fokus ke fungsionalitas dulu, refactor nanti</td>
+        </tr>
+        <tr>
+          <td>Class data polos (DTO)</td>
+          <td>Ya</td>
+          <td>Class <code>Order</code> hanya berisi property &amp; getter — tidak perlu dipecah lagi</td>
+        </tr>
+        <tr>
+          <td>Aplikasi sedang tumbuh</td>
+          <td>Mulai pisahkan</td>
+          <td>Saat class melebihi 200 baris atau > 5 method tidak berhubungan</td>
+        </tr>
+        <tr>
+          <td>Tim besar, jangka panjang</td>
+          <td>Wajib SRP ketat</td>
+          <td>Mencegah konflik &amp; memudahkan maintenance bertahun-tahun</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box box-warning">
+    <strong>Aturan Emas</strong>
+    Kalau Anda <em>ragu</em> apakah perlu memisahkan — coba tanya:
+    <br><br>
+    <em>"Kalau bagian X berubah, apakah saya harus menyentuh bagian Y juga?"</em>
+    <br><br>
+    Kalau <strong>ya</strong>, berarti class melanggar SRP. Pisahkan.
+  </div>
+
+  <!-- ================= 11. LATIHAN ================= -->
+  <h2 id="latihan">11. Latihan &amp; Tugas</h2>
+
+  <div class="exercise">
+    <h4>Latihan 1 — Identifikasi Tanggung Jawab</h4>
+    <p>Perhatikan class berikut, lalu sebutkan berapa tanggung jawab di dalamnya:</p>
+    <pre><code>class StudentManager
+{
+    public function validateStudent(array $data): bool { ... }
+    public function calculateGPA(array $grades): float { ... }
+    public function saveToDatabase(array $data): void { ... }
+    public function generateTranscript(array $data): string { ... }
+    public function sendEmailNotification(array $data): void { ... }
+}</code></pre>
+    <p>
+      <strong>Target:</strong> Sebutkan 5 tanggung jawab + peminta perubahan untuk tiap tanggung jawab.
+    </p>
+  </div>
+
+  <div class="exercise">
+    <h4>Latihan 2 — Refactor Kode</h4>
+    <p>
+      Ambil class <code>StudentManager</code> di atas, lalu pecah menjadi
+      class-class yang masing-masing mengikuti SRP. Wajib menyertakan:
+    </p>
+    <ul>
+      <li>Minimal <strong>5 class</strong> terpisah.</li>
+      <li>Gunakan <strong>interface</strong> untuk penyimpanan (misal <code>StudentRepositoryInterface</code>).</li>
+      <li>Gunakan <strong>abstract class</strong> untuk notifikasi (misal <code>Notifier</code>).</li>
+      <li>Tunjukkan <strong>polimorfisme</strong> dengan membuat 2 turunan notifikasi (email &amp; SMS).</li>
+      <li>Buat class koordinator <code>StudentService</code> yang merangkai semuanya.</li>
+    </ul>
+  </div>
+
+  <div class="exercise">
+    <h4>Latihan 3 — Analisis Sendiri</h4>
+    <p>
+      Buka salah satu project PHP Anda sebelumnya. Audit SRP dengan tabel:
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Class</th><th>Method</th><th>Tanggung Jawab</th><th>Melanggar SRP?</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>...</td><td>...</td><td>...</td><td>Ya/Tidak</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Untuk setiap pelanggaran, tuliskan usulan perbaikannya.</p>
+  </div>
+
+  <div class="exercise">
+    <h4>Tugas Akhir — Refactor Project Sebelumnya</h4>
+    <p>
+      Ambil project <strong>Praktikum 2</strong> atau <strong>Praktikum 3</strong>
+      yang sudah Anda buat, lalu terapkan SRP. Kumpulkan:
+    </p>
+    <ol>
+      <li><strong>Kode sebelum</strong> refactor (1 file besar).</li>
+      <li><strong>Kode sesudah</strong> refactor (banyak file kecil).</li>
+      <li><strong>Class diagram sebelum</strong> dan <strong>sesudah</strong>.</li>
+      <li><strong>Penjelasan tertulis</strong> (maksimal 1 halaman):
+        <ul>
+          <li>Tanggung jawab apa saja yang dipisahkan.</li>
+          <li>Class mana yang menggunakan interface.</li>
+          <li>Class mana yang menggunakan abstract class.</li>
+          <li>Di mana polimorfisme terlihat.</li>
+        </ul>
+      </li>
+    </ol>
+    <p>
+      <strong>Nama file:</strong> <code>PBO_SRP_NamaAnda_NIM.zip</code>
+      <br>
+      <strong>Isi:</strong> folder project (tanpa <code>vendor/</code>) + PDF laporan + screenshot output.
+    </p>
+  </div>
+
+  <!-- ================= 12. REFERENSI ================= -->
+  <h2 id="referensi">12. Referensi</h2>
+  <ul>
+    <li>Martin, Robert C. — <em>Clean Architecture: A Craftsman's Guide to Software Structure and Design</em>. Prentice Hall, 2017. (Bab 7: SRP)</li>
+    <li>Martin, Robert C. — <em>Agile Software Development, Principles, Patterns, and Practices</em>. Prentice Hall, 2002.</li>
+    <li>Martin, Robert C. — <em>The Principles of OOD</em>. <em>https://butunclebob.com/ArticleS.UncleBob.PrinciplesOfOod</em></li>
+    <li>Refactoring Guru — <em>Single Responsibility Principle</em>: <em>https://refactoring.guru/design-patterns/solid</em></li>
+    <li>PHP The Right Way — <em>Design Patterns</em>: <em>https://phptherightway.com/</em></li>
+    <li>PHP-FIG PSR-4 — <em>Autoloading Standard</em>: <em>https://www.php-fig.org/psr/psr-4/</em></li>
+  </ul>
+
+  <!-- ================= FOOTER ================= -->
+  <footer>
+    <p><strong>Modul Praktikum Pemrograman Berbasis Objek — Single Responsibility Principle</strong></p>
+    <p>Bagian dari Modul SOLID · Disusun untuk Pembelajaran OOP Praktis</p>
+    <p style="font-size: 0.85em;">Dicetak dari browser via <em>Print → Save as PDF</em></p>
+
+    <div class="signature">
+      <p>Dosen Pengampu,</p>
+      <br><br>
+      <p class="name">Syahru Rahmayuda</p>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
