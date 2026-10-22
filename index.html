@@ -1043,61 +1043,6 @@
 </footer>
 
 <script>
-/* =========================================================
-   KONTEN MODUL SOLID (Disimpan sebagai string)
-   ========================================================= */
-   
-const singleHTML = `<!DOCTYPE html>
-<html lang="id">
-<head><meta charset="UTF-8"><title>Modul SRP — Single Responsibility Principle</title><style>body{font-family:'Segoe UI',sans-serif;padding:40px;line-height:1.6;color:#1e293b;max-width:900px;margin:0 auto;}h1{color:#4f46e5;}h2{color:#3730a3;border-bottom:2px solid #e2e8f0;padding-bottom:8px;}pre{background:#0f172a;color:#e2e8f0;padding:15px;border-radius:8px;overflow-x:auto;}code{background:#f1f5f9;padding:2px 6px;border-radius:4px;color:#be123c;}</style></head>
-<body><h1>Single Responsibility Principle (SRP)</h1><p><em>"Setiap class hanya boleh punya satu alasan untuk berubah."</em></p><p>Ini adalah file <code>single.html</code>.</p><h2>Contoh:</h2><pre><code>&lt;?php
-class UserService {
-    // Melanggar SRP karena 1 class melakukan 3 hal berbeda
-    public function validate() { ... }
-    public function save() { ... }
-    public function sendEmail() { ... }
-}</code></pre></body>
-</html>`;
-
-const openClosedHTML = `<!DOCTYPE html>
-<html lang="id">
-<head><meta charset="UTF-8"><title>Modul OCP — Open/Closed Principle</title><style>body{font-family:'Segoe UI',sans-serif;padding:40px;line-height:1.6;color:#1e293b;max-width:900px;margin:0 auto;}h1{color:#10b981;}h2{color:#3730a3;border-bottom:2px solid #e2e8f0;padding-bottom:8px;}pre{background:#0f172a;color:#e2e8f0;padding:15px;border-radius:8px;overflow-x:auto;}code{background:#f1f5f9;padding:2px 6px;border-radius:4px;color:#be123c;}</style></head>
-<body><h1>Open/Closed Principle (OCP)</h1><p><em>"Class harus terbuka untuk ekstensi, tapi tertutup untuk modifikasi."</em></p><p>Ini adalah file <code>openclosed.html</code>.</p><h2>Contoh:</h2><pre><code>&lt;?php
-interface DiscountStrategy {
-    public function apply(float $price): float;
-}
-// Tambah diskon baru cukup buat class baru</code></pre></body>
-</html>`;
-
-const liskovHTML = `<!DOCTYPE html>
-<html lang="id">
-<head><meta charset="UTF-8"><title>Modul LSP — Liskov Substitution Principle</title><style>body{font-family:'Segoe UI',sans-serif;padding:40px;line-height:1.6;color:#1e293b;max-width:900px;margin:0 auto;}h1{color:#f59e0b;}h2{color:#3730a3;border-bottom:2px solid #e2e8f0;padding-bottom:8px;}pre{background:#0f172a;color:#e2e8f0;padding:15px;border-radius:8px;overflow-x:auto;}code{background:#f1f5f9;padding:2px 6px;border-radius:4px;color:#be123c;}</style></head>
-<body><h1>Liskov Substitution Principle (LSP)</h1><p><em>"Objek turunan harus bisa menggantikan objek induknya tanpa merusak program."</em></p><p>Ini adalah file <code>liskov.html</code>.</p><h2>Contoh:</h2><pre><code>&lt;?php
-interface Bird { public function eat(): string; }
-interface FlyingBird extends Bird { public function fly(): string; }
-// Penguin cukup implement Bird, tidak perlu fly()</code></pre></body>
-</html>`;
-
-const interfaceHTML = `<!DOCTYPE html>
-<html lang="id">
-<head><meta charset="UTF-8"><title>Modul ISP — Interface Segregation Principle</title><style>body{font-family:'Segoe UI',sans-serif;padding:40px;line-height:1.6;color:#1e293b;max-width:900px;margin:0 auto;}h1{color:#8b5cf6;}h2{color:#3730a3;border-bottom:2px solid #e2e8f0;padding-bottom:8px;}pre{background:#0f172a;color:#e2e8f0;padding:15px;border-radius:8px;overflow-x:auto;}code{background:#f1f5f9;padding:2px 6px;border-radius:4px;color:#be123c;}</style></head>
-<body><h1>Interface Segregation Principle (ISP)</h1><p><em>"Jangan paksa class mengimplementasikan method yang tidak dipakainya."</em></p><p>Ini adalah file <code>interface.html</code>.</p><h2>Contoh:</h2><pre><code>&lt;?php
-interface Workable { public function work(): string; }
-interface Eatable { public function eat(): string; }
-// Robot cukup implement Workable, tidak perlu Eatable</code></pre></body>
-</html>`;
-
-const dependencyHTML = `<!DOCTYPE html>
-<html lang="id">
-<head><meta charset="UTF-8"><title>Modul DIP — Dependency Inversion Principle</title><style>body{font-family:'Segoe UI',sans-serif;padding:40px;line-height:1.6;color:#1e293b;max-width:900px;margin:0 auto;}h1{color:#ec4899;}h2{color:#3730a3;border-bottom:2px solid #e2e8f0;padding-bottom:8px;}pre{background:#0f172a;color:#e2e8f0;padding:15px;border-radius:8px;overflow-x:auto;}code{background:#f1f5f9;padding:2px 6px;border-radius:4px;color:#be123c;}</style></head>
-<body><h1>Dependency Inversion Principle (DIP)</h1><p><em>"Bergantunglah pada abstraksi (interface), bukan pada implementasi konkret."</em></p><p>Ini adalah file <code>dependency.html</code>.</p><h2>Contoh:</h2><pre><code>&lt;?php
-interface DatabaseInterface { ... }
-class UserService {
-    public function __construct(private DatabaseInterface $db) {}
-}</code></pre></body>
-</html>`;
-
-
 /* ============ DATA MATERI PERKULIAHAN ============ */
 const courseData = {
   rpl: {
@@ -1200,13 +1145,14 @@ function openCourse(key) {
     
     // Logika untuk menampilkan menu SOLID
     if (m.link === 'solid-menu') {
+      // MENGGUNAKAN LINK FILE HTML FISIK (BUKAN BLOB)
       linkHtml = `
         <div class="solid-menu">
-          <a href="#" onclick="event.preventDefault(); bukaFileModul('single');">📘 Single Responsibility</a>
-          <a href="#" onclick="event.preventDefault(); bukaFileModul('openclosed');">📗 Open/Closed</a>
-          <a href="#" onclick="event.preventDefault(); bukaFileModul('liskov');">📙 Liskov Substitution</a>
-          <a href="#" onclick="event.preventDefault(); bukaFileModul('interface');">📓 Interface Segregation</a>
-          <a href="#" onclick="event.preventDefault(); bukaFileModul('dependency');">📕 Dependency Inversion</a>
+          <a href="single.html" target="_blank">📘 Single Responsibility</a>
+          <a href="ocp.html" target="_blank">📗 Open/Closed</a>
+          <a href="lsp.html" target="_blank">📙 Liskov Substitution</a>
+          <a href="isp.html" target="_blank">📓 Interface Segregation</a>
+          <a href="dip.html" target="_blank">📕 Dependency Inversion</a>
         </div>
       `;
     } 
@@ -1238,24 +1184,6 @@ function openCourse(key) {
 function closeModal() {
   overlay.classList.remove('open');
   document.body.style.overflow = '';
-}
-
-// Fungsi untuk membuka file modul HTML yang disimulasikan
-function bukaFileModul(modulKey) {
-  let htmlContent = '';
-  
-  if (modulKey === 'single') htmlContent = singleHTML;
-  else if (modulKey === 'openclosed') htmlContent = openClosedHTML;
-  else if (modulKey === 'liskov') htmlContent = liskovHTML;
-  else if (modulKey === 'interface') htmlContent = interfaceHTML;
-  else if (modulKey === 'dependency') htmlContent = dependencyHTML;
-
-  // Buat Blob dan buka di tab baru
-  const blob = new Blob([htmlContent], { type: 'text/html' });
-  const url = URL.createObjectURL(blob);
-  
-  // Buka tab baru
-  window.open(url, '_blank');
 }
 
 overlay.addEventListener('click', (e) => {
