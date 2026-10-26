@@ -415,6 +415,103 @@
     padding: 3px 9px; border-radius: 6px;
   }
 
+  /* ============ HASIL PENELITIAN & PKM 2026 ============ */
+  .pkm-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px;
+  }
+  .pkm-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 28px 26px;
+    transition: var(--transition); position: relative; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .pkm-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+  }
+  .pkm-card.pkm-proto::before { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+  .pkm-card.research-proto::before { background: linear-gradient(90deg, #ea580c, #f59e0b); }
+  .pkm-card:hover {
+    transform: translateY(-5px); box-shadow: var(--shadow-lg);
+    border-color: rgba(15,118,110,0.25);
+  }
+  .pkm-head {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+  }
+  .pkm-icon {
+    width: 48px; height: 48px; border-radius: 13px; flex-shrink: 0;
+    display: grid; place-items: center; font-size: 1.4rem;
+    background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(167,139,250,0.12));
+  }
+  .pkm-card.research-proto .pkm-icon {
+    background: linear-gradient(135deg, rgba(234,88,12,0.12), rgba(245,158,11,0.12));
+  }
+  .pkm-label {
+    display: inline-block; font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 6px; margin-bottom: 4px;
+  }
+  .pkm-label.pkm { background: rgba(124,58,237,0.1); color: #7c3aed; }
+  .pkm-label.research { background: rgba(234,88,12,0.1); color: #ea580c; }
+  .pkm-year {
+    font-size: 0.72rem; font-weight: 700; color: var(--text-muted);
+    margin-left: auto; background: var(--bg); padding: 4px 10px;
+    border-radius: 6px; border: 1px solid var(--border);
+  }
+  .pkm-card h3 {
+    font-size: 1.08rem; margin-bottom: 8px; line-height: 1.35;
+  }
+  .pkm-card p {
+    font-size: 0.86rem; color: var(--text-muted);
+    margin-bottom: 16px; flex-grow: 1;
+  }
+  .pkm-tags {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px;
+  }
+  .pkm-tags span {
+    font-size: 0.68rem; font-weight: 600;
+    padding: 3px 9px; border-radius: 100px;
+    background: rgba(15,118,110,0.07); color: var(--primary);
+    border: 1px solid rgba(15,118,110,0.12);
+  }
+
+  /* Multiple sub-links (untuk PKM AIDA) */
+  .pkm-sublinks {
+    display: flex; flex-direction: column; gap: 8px;
+    margin-top: auto;
+  }
+  .pkm-sublink {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 14px; border-radius: 10px;
+    background: rgba(124,58,237,0.06);
+    border: 1px solid rgba(124,58,237,0.15);
+    font-size: 0.82rem; font-weight: 600; color: #6d28d9;
+    transition: var(--transition);
+  }
+  .pkm-sublink:hover {
+    background: #7c3aed; color: #fff;
+    border-color: #7c3aed; transform: translateX(3px);
+  }
+  .pkm-sublink .sublink-icon {
+    font-size: 0.95rem; flex-shrink: 0;
+  }
+  .pkm-sublink .sublink-arrow {
+    margin-left: auto; opacity: 0.6; font-size: 0.85rem;
+  }
+  .pkm-sublink:hover .sublink-arrow { opacity: 1; }
+
+  /* Primary link (untuk Penelitian DIPA) */
+  .pkm-link {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 11px 20px; border-radius: 10px;
+    font-size: 0.86rem; font-weight: 600;
+    background: linear-gradient(135deg, #ea580c, #f59e0b);
+    color: #fff; transition: var(--transition);
+    box-shadow: 0 8px 20px -8px rgba(234,88,12,0.5);
+    margin-top: auto;
+  }
+  .pkm-link:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -8px rgba(234,88,12,0.6); }
+
   /* ============ MATA KULIAH ============ */
   .courses-grid {
     display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px;
@@ -496,7 +593,6 @@
   .meeting-body h5 { font-size: 0.92rem; margin-bottom: 4px; }
   .meeting-body p { font-size: 0.82rem; color: var(--text-muted); }
   
-  /* Modifikasi khusus untuk menu SOLID */
   .solid-menu {
     display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;
   }
@@ -512,7 +608,6 @@
     transform: translateY(-1px); box-shadow: 0 4px 10px -4px rgba(15,118,110,0.4);
   }
   
-  /* Style khusus untuk modul pembuka */
   .solid-menu a.solid-intro {
     background: rgba(234, 88, 12, 0.1); 
     color: #c2410c; 
@@ -560,6 +655,7 @@
     .academic-grid { grid-template-columns: 1fr 1fr; }
     .stats { grid-template-columns: 1fr 1fr; }
     .courses-grid { grid-template-columns: 1fr; }
+    .pkm-grid { grid-template-columns: 1fr; }
     .footer-grid { grid-template-columns: 1fr 1fr; }
     .cert-grid { grid-template-columns: 1fr; text-align: center; gap: 30px; padding: 30px; }
     .cert-visual { margin-bottom: 10px; }
@@ -616,6 +712,7 @@
       <a href="#sertifikasi">Sertifikasi</a>
       <a href="#keahlian">Keahlian</a>
       <a href="#riset">Riset</a>
+      <a href="#pkm">Hasil 2026</a>
       <a href="#matakuliah">Mata Kuliah</a>
       <a href="#kontak" class="nav-cta">Kontak</a>
     </div>
@@ -650,8 +747,8 @@
         <a href="#matakuliah" class="btn btn-primary">
           📚 Lihat Materi Ajar
         </a>
-        <a href="#riset" class="btn btn-ghost">
-          🔬 Riset Saya
+        <a href="#pkm" class="btn btn-ghost">
+          🚀 Hasil Riset & PKM 2026
         </a>
       </div>
     </div>
@@ -913,6 +1010,87 @@
   </div>
 </section>
 
+<!-- ============ HASIL PENELITIAN & PKM 2026 ============ -->
+<section id="pkm" style="background: linear-gradient(180deg, transparent, rgba(124,58,237,0.03), transparent);">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="section-tag" style="color: #7c3aed;">Produk Riset & PKM 2026</span>
+      <h2>Prototipe Hasil Penelitian & Pengabdian</h2>
+      <p>Produk nyata tahun 2026 dalam bentuk prototipe digital yang dapat diakses langsung oleh publik, mitra desa, dan masyarakat luas.</p>
+    </div>
+
+    <div class="pkm-grid">
+      <!-- RISET DIPA FMIPA 2026 -->
+      <div class="pkm-card research-proto reveal">
+        <div class="pkm-head">
+          <div class="pkm-icon">🔬</div>
+          <div>
+            <span class="pkm-label research">Riset DIPA FMIPA</span>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">Penelitian Terapan</div>
+          </div>
+          <span class="pkm-year">2026</span>
+        </div>
+        <h3>Framework Hybrid AI Berbasis Suara untuk Layanan Administrasi Desa</h3>
+        <p>
+          Kerangka kerja hibrida yang menggabungkan pemrosesan suara (Speech Recognition),
+          Natural Language Processing, dan sistem layanan administrasi desa — memungkinkan
+          warga mengakses layanan melalui perintah suara alami.
+        </p>
+        <div class="pkm-tags">
+          <span>Hybrid AI</span>
+          <span>Speech Recognition</span>
+          <span>NLP</span>
+          <span>Smart Village</span>
+        </div>
+        <a href="https://hybrid.myriset.my.id/" target="_blank" rel="noopener" class="pkm-link">
+          🚀 Buka Prototipe Framework Hybrid AI
+        </a>
+      </div>
+
+      <!-- PKM 2026 AIDA -->
+      <div class="pkm-card pkm-proto reveal">
+        <div class="pkm-head">
+          <div class="pkm-icon">💡</div>
+          <div>
+            <span class="pkm-label pkm">PKM 2026</span>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">Pengabdian kepada Masyarakat</div>
+          </div>
+          <span class="pkm-year">2026</span>
+        </div>
+        <h3>AIDA — Asisten Informasi Desa berbasis AI</h3>
+        <p>
+          Ekosistem layanan digital desa yang terdiri dari tiga aplikasi terintegrasi:
+          portal publik, panel admin, dan layanan pelanggan berbasis AI —
+          membantu aparatur desa melayani masyarakat secara cepat dan cerdas.
+        </p>
+        <div class="pkm-tags">
+          <span>AI Assistant</span>
+          <span>Web App</span>
+          <span>Admin Panel</span>
+          <span>Layanan Desa</span>
+        </div>
+        <div class="pkm-sublinks">
+          <a href="https://aida.myriset.my.id/" target="_blank" rel="noopener" class="pkm-sublink">
+            <span class="sublink-icon">🌐</span>
+            <span>Landing Page AIDA</span>
+            <span class="sublink-arrow">→</span>
+          </a>
+          <a href="https://admin-aida.myriset.my.id/login" target="_blank" rel="noopener" class="pkm-sublink">
+            <span class="sublink-icon">🔐</span>
+            <span>Admin Panel AIDA</span>
+            <span class="sublink-arrow">→</span>
+          </a>
+          <a href="https://aidaservice.myriset.my.id/" target="_blank" rel="noopener" class="pkm-sublink">
+            <span class="sublink-icon">🤖</span>
+            <span>AIDA Service (AI)</span>
+            <span class="sublink-arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ MATA KULIAH ============ -->
 <section id="matakuliah">
   <div class="container">
@@ -1037,6 +1215,7 @@
         <a href="#sertifikasi">Sertifikasi</a>
         <a href="#keahlian">Keahlian</a>
         <a href="#riset">Riset</a>
+        <a href="#pkm">Hasil 2026</a>
         <a href="#matakuliah">Mata Kuliah</a>
       </div>
       <div>
@@ -1133,7 +1312,6 @@ const courseData = {
       { num: 10, topic: 'Collection & Generics', desc: 'List, Map, Set, dan generic type.', link: '#' },
       { num: 11, topic: 'File I/O', desc: 'Membaca dan menulis file.', link: '#' },
       { num: 12, topic: 'GUI Sederhana', desc: 'Dasar pembuatan antarmuka dengan Java Swing/Tkinter.', link: '#' },
-      // PERTEMUAN 13 - MENU SOLID + MODUL PEMBUKA
       { num: 13, topic: 'Prinsip SOLID', desc: 'Memahami 5 prinsip desain OOP: SRP, OCP, LSP, ISP, dan DIP. Silakan mulai dari Modul Pembuka, lalu pelajari masing-masing prinsip:', link: 'solid-menu' },
       { num: 14, topic: 'Presentasi Proyek Akhir', desc: 'Demo aplikasi OOP.', link: '#' },
     ]
@@ -1155,15 +1333,12 @@ function openCourse(key) {
   modalBody.innerHTML = data.meetings.map(m => {
     let linkHtml = '';
     
-    // Logika untuk menampilkan menu SOLID + Modul Pembuka
     if (m.link === 'solid-menu') {
       linkHtml = `
         <div class="solid-menu">
-          <!-- MODUL PEMBUKA (FILE solid.html) -->
           <a href="solid.html" target="_blank" class="solid-intro">
             🏁 Modul Pembuka: Pengantar SOLID
           </a>
-          <!-- 5 MODUL PRINSIP -->
           <a href="single.html" target="_blank">📘 Single Responsibility</a>
           <a href="ocp.html" target="_blank">📗 Open/Closed</a>
           <a href="lsp.html" target="_blank">📙 Liskov Substitution</a>
@@ -1172,11 +1347,9 @@ function openCourse(key) {
         </div>
       `;
     } 
-    // Logika untuk link biasa
     else if (m.link !== '#') {
       linkHtml = `<a class="meeting-link" href="${m.link}" target="_blank">📄 Buka materi →</a>`;
     } 
-    // Link kosong
     else {
       linkHtml = `<a class="meeting-link" href="#" onclick="event.preventDefault(); alert('Materi pertemuan ${m.num} akan segera tersedia.');">📄 Buka materi →</a>`;
     }
